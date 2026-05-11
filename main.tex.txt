@@ -1,0 +1,39 @@
+\input{frontmatter/titlepage}
+\input{frontmatter/inhalt}
+
+% =================================================
+% Hauptteil
+% =================================================
+
+\documentclass{article}
+
+\begin{document}
+
+\input{chapters/01_einleitung}
+\input{chapters/02_analyse}
+\input{chapters/03_konzeption}
+\input{chapters/04_realisierung}
+\input{chapters/05_test_qa}
+\input{chapters/06_uebergabe}
+\input{chapters/07_projektabschluss}
+
+% =================================================
+% Literaturverzeichnis
+% =================================================
+
+\input{bibliography/literature}
+
+% =================================================
+% Appendix / Anlagen
+% =================================================
+
+\appendix
+
+\input{appendix/ip_plan}
+\input{appendix/routing_tables}
+\input{appendix/firewall_rules}
+\input{appendix/test_protocols}
+\input{appendix/betriebshandbuch}
+\input{appendix/troubleshooting_leitfaden}
+
+\end{document}
