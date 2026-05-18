@@ -1,12 +1,12 @@
 % ---------- Datei: chapters/01_einleitung.tex ----------
 \chapter{Einleitung}
 
-Dieses Kapitel beschreibt das Projektumfeld, die Ausgangssituation sowie die zu erreichenden Ziele.
+\section{Projektumfeld}
+Das Projekt wird im Rahmen meiner Ausbildung zur Fachinformatikerin für Systemintegration bei der Söldner Consult GmbH in Nürnberg durchgeführt. Das Unternehmen ist ein spezialisiertes IT-Beratungshaus mit Fokus auf Cloud Computing (GCP, Azure, AWS), Datacenter und Networking.
+
+Der Kunde ist ein mittelständisches Unternehmen aus dem Finanzsektor. Aufgrund der Branchenzugehörigkeit und strenger Compliance-Richtlinien unterliegt die IT-Infrastruktur hohen Sicherheitsvorgaben. Betriebsgeheimnisse, exakte Systemnamen und reale IP-Adressen des Kunden wurden in dieser Dokumentation aus Datenschutzgründen anonymisiert.
 
 \section{Projektbeschreibung und Zielsetzung}
-Die bestehende Netzwerkarchitektur des Kunden in der Google Cloud Platform ist historisch gewachsen. Sie entspricht nicht mehr den Anforderungen an eine moderne Landing Zone hinsichtlich Wartbarkeit, Skalierbarkeit und Sicherheit. 
+Die aktuelle Netzwerkarchitektur des Kunden in der Google Cloud Platform (GCP) ist historisch gewachsen. Sie besteht aus mehreren isolierten Virtual Private Clouds (VPCs) und dezentral konfigurierten VPN-Verbindungen zu den On-Premises-Standorten. Diese Struktur ist wartungsintensiv, fehleranfällig und skaliert schlecht bei der Anbindung neuer Zweigstellen.
 
-Ziel dieses Projektes ist die Implementierung einer zentral verwalteten, skalierbaren Hybrid-Cloud-Netzwerkarchitektur mit dem Google Cloud Network Connectivity Center (NCC). Dadurch wird eine sichere Kommunikation zwischen allen Standorten und Cloud-Ressourcen bei einfacher Erweiterbarkeit geschaffen.
-
-\section{Projektumfeld}
-Das Projekt wird im Rahmen der Söldner Consult GmbH durchgeführt. Das Unternehmen aus Nürnberg ist spezialisiert auf Cloud Computing (GCP, Azure, AWS), Datacenter, Networking und DevOps. Der Kunde für dieses Projekt ist ein mittelständisches Unternehmen mit einem Hauptstandort, Zweigstellen sowie einem lokalen Rechenzentrum.
+Ziel dieses Projekts ist die Konzeption und Implementierung einer zentral verwalteten Hybrid-Cloud-Netzwerkarchitektur. Als technologische Basis dient das Google Cloud Network Connectivity Center (NCC). Durch den Aufbau einer Hub-and-Spoke-Topologie soll eine sichere, hochverfügbare und standardisierte Kommunikation zwischen dem lokalen Rechenzentrum, den Zweigstellen und den Cloud-Ressourcen etabliert werden.
