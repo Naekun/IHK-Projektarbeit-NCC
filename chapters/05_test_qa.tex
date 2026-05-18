@@ -1,0 +1,14 @@
+% ---------- Datei: chapters/05_test_qa.tex ----------
+\chapter{Test- und Qualitätssicherung}
+
+\section{Testkonzept}
+Um die fehlerfreie Funktion der neuen Architektur zu gewährleisten, wurde ein Testkonzept entworfen. Dieses umfasst Konnektivitäts-, Routing- und Performancetests.
+
+\section{Durchführung der Tests}
+\begin{itemize}
+    \item \textbf{Konnektivitätstests:} Durch Ping- und Traceroute-Befehle von den Test-VMs zu den lokalen Ressourcen wurde die generelle Erreichbarkeit geprüft.
+    \item \textbf{Routing-Validierung:} Durch die Deaktivierung eines VPN-Tunnels der redundanten Anbindung wurde das automatische Failover des BGP-Routings erfolgreich getestet.
+    \item \textbf{Sicherheitstests:} Die korrekte Filterung durch die Firewall-Regeln wurde anhand von Verbindungsversuchen auf unzulässige Ports validiert.
+\end{itemize}
+
+Die detaillierten Testprotokolle befinden sich im Anhang.

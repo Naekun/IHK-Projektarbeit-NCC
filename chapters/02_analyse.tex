@@ -1,0 +1,23 @@
+% ---------- Datei: chapters/02_analyse.tex ----------
+\chapter{Analysephase}
+
+\section{Ist-Zustand}
+In der Ausgangssituation sind folgende Aspekte der historisch gewachsenen Netzwerkinfrastruktur problematisch:
+\begin{itemize}
+    \item Es gibt keine zentrale Verwaltung der hybriden Netzwerkverbindungen zwischen dem lokalen Rechenzentrum und der Cloud.
+    \item Bei der Anbindung weiterer Standorte fehlt die nötige Skalierbarkeit.
+    \item Die manuelle Routenkonfiguration ist komplex und fehleranfällig.
+    \item Die Sichtbarkeit der gesamten Netzwerktopologie ist stark eingeschränkt.
+    \item Es gibt keine einheitliche Sicherheitsrichtlinie.
+\end{itemize}
+
+Dies führt zu einem hohen Administrationsaufwand und eingeschränkter Flexibilität.
+
+\section{Anforderungsanalyse}
+Die neue Infrastruktur muss folgende fachliche und technische Anforderungen erfüllen:
+\begin{itemize}
+    \item \textbf{Verfügbarkeit:} Ausfallsichere Anbindung durch HA VPN.
+    \item \textbf{Skalierbarkeit:} Einfaches Hinzufügen neuer Standorte und Netzwerke (Spoke-Architektur).
+    \item \textbf{Sicherheit:} Zentrale Cloud Firewall-Richtlinien.
+    \item \textbf{Betrieb:} Bereitstellung von Monitoring und einem Betriebshandbuch.
+\end{itemize}

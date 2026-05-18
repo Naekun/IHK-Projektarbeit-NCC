@@ -1,0 +1,14 @@
+% ---------- Datei: chapters/04_realisierung.tex ----------
+\chapter{Realisierungsphase}
+
+\section{Implementierung der Infrastruktur}
+Die Umsetzung beginnt mit dem Setup des GCP-Projekts und der Bereitstellung der VPC-Netzwerke sowie deren Subnetze. Zur Überprüfung der Konnektivität werden isolierte Test-VMs bereitgestellt.
+
+\section{Konfiguration des Network Connectivity Centers}
+Im nächsten Schritt wird der NCC Hub als zentrale Instanz eingerichtet. Die Cloud-Anbindung erfolgt durch die Integration der VPCs als Spokes an das NCC. 
+
+\section{Cloud VPN und Routing}
+Für die sichere Anbindung der Zweigstellen werden HA Cloud VPN-Tunnel konfiguriert. Die Routenverteilung wird über BGP-Peerings auf dem Cloud Router realisiert. So werden Netzrouten automatisch zwischen den lokalen Netzwerken und der Cloud ausgetauscht.
+
+\section{Firewall und Monitoring}
+Abschließend werden die definierten Sicherheitsrichtlinien in der Cloud Firewall konfiguriert. Zur Überwachung des Netzwerkverkehrs wird das Google Cloud Monitoring eingerichtet.

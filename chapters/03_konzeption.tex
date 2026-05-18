@@ -1,0 +1,17 @@
+% ---------- Datei: chapters/03_konzeption.tex ----------
+\chapter{Konzeptionsphase}
+
+\section{Technologieauswahl}
+Zur Erfüllung der Anforderungen werden folgende Google Cloud Technologien eingesetzt:
+\begin{itemize}
+    \item Network Connectivity Center (NCC)
+    \item VPC Networks und Cloud Router
+    \item Cloud VPN oder Cloud Interconnect
+    \item Cloud Firewall und Cloud Monitoring
+\end{itemize}
+
+\section{Netzwerkdesign und NCC-Architektur}
+Der NCC Hub bildet das Kernstück der neuen Architektur und fungiert als zentrale Verwaltungsplattform. Zwei VPC-Netzwerke in unterschiedlichen Regionen sowie zwei Zweigstellen werden als sogenannte Spokes an den Hub angebunden. Dies ermöglicht eine automatische Routenverteilung zwischen allen Spokes via Border Gateway Protocol (BGP).
+
+\section{Sicherheitskonzept und IP-Adressierung}
+Um überlappende Subnetze zwischen der Cloud und den lokalen Standorten zu vermeiden, wird ein strukturierter IP-Adressplan entworfen. Zusätzlich werden Firewall-Richtlinien konzipiert, die festlegen, welche Netzsegmente untereinander kommunizieren dürfen.
