@@ -1,46 +1,172 @@
 % ---------- Datei: chapters/02_analyse.tex ----------
 \chapter{Analysephase}
 
-\section{Ist-Zustand}
-Der Kunde betreibt aktuell ein On-Premises-Rechenzentrum sowie zwei externe Zweigstellen. In der GCP existieren zwei separate VPC-Netzwerke in unterschiedlichen geographischen Regionen. Die lokalen Standorte sind über einzelne, manuell konfigurierte IPsec-VPN-Tunnel mit den jeweiligen VPCs verbunden. 
+\section{Ist-Zustand und Problemanalyse}
+Die Söldner Consult GmbH ist ein IT-Dienstleistungsunternehmen mit Schwerpunkt auf Cloud-Architekturen, Netzwerkdesign und Infrastrukturmodernisierung. Der Kunde ist ein mittelständisches Unternehmen mit Hauptstandort in Nürnberg sowie zwei Außenstellen.
 
-Das Routing erfolgt in der bisherigen Umgebung überwiegend statisch. Es existiert kein zentraler Netzwerkknoten. Wenn ein On-Premises-Standort mit einem anderen Cloud-Netzwerk kommunizieren muss, erfordert dies die manuelle Einrichtung neuer VPN-Tunnel und Anpassungen in den Routing-Tabellen. Diese fehlende Transparenz führt zu einem hohen Administrationsaufwand und widerspricht modernen Cloud-Architektur-Prinzipien.
+Die bestehende Infrastruktur umfasst:
+\begin{itemize}
+    \item ein lokales Rechenzentrum,
+    \item mehrere VPN-Anbindungen,
+    \item sowie Cloud-Ressourcen innerhalb der Google Cloud Platform.
+\end{itemize}
 
-\section{Soll-Zustand}
-Zukünftig soll das gesamte Cloud-Netzwerk zentral über einen NCC Hub verwaltet werden. Die VPCs und die On-Premises-Standorte werden als sogenannte Spokes an diesen Hub angebunden. Das Routing soll vollständig dynamisch über das Border Gateway Protocol (BGP) erfolgen. Für die VPN-Anbindungen wird High Availability (HA) VPN gefordert, um eine Ausfallsicherheit von 99,99 \% zu gewährleisten.
+Die aktuelle Netzwerkstruktur basiert auf mehreren separaten Site-to-Site-VPN-Verbindungen. Das Unternehmen plant eine schrittweise Migration weiterer Dienste in die Cloud, jedoch erfüllt die bestehende Netzwerkarchitektur die Anforderungen an Skalierbarkeit und zentrale Verwaltung nicht mehr.
+
+Probleme der bestehenden Architektur:
+\begin{itemize}
+    \item manuelle Pflege statischer Routen,
+    \item fehlende zentrale Verwaltung,
+    \item hohe Komplexität bei Erweiterungen,
+    \item eingeschränkte Transparenz,
+    \item inkonsistente Sicherheitsrichtlinien.
+\end{itemize}
+
+Zusätzlich existieren keine zentralen Monitoring-Mechanismen zur Überwachung der hybriden Netzwerkverbindungen. Die bestehende Architektur verursacht erhöhten administrativen Aufwand und erschwert zukünftige Cloud-Erweiterungen.
+
+\section{Problemstellung}
+Mit zunehmender Anzahl angebundener Standorte steigt die Komplexität der bestehenden VPN-Mesh-Struktur erheblich.
+
+Neue Standorte erfordern:
+\begin{itemize}
+    \item zusätzliche Tunnel,
+    \item manuelle Routing-Anpassungen,
+    \item individuelle Firewall-Konfigurationen.
+\end{itemize}
+
+Dies erhöht die Fehleranfälligkeit, die Bereitstellungszeit sowie den Betriebsaufwand. Zudem bestehen Risiken hinsichtlich fehlender Redundanz, mangelnder Übersichtlichkeit und eingeschränkter Skalierbarkeit.
+
+\section{Projektziel (Soll-Konzept)}
+Ziel des Projekts ist die Implementierung einer zentralen hybriden Netzwerkarchitektur innerhalb der Google Cloud.
+
+Hierfür soll:
+\begin{itemize}
+    \item ein NCC-Hub eingerichtet,
+    \item zwei VPC-Netzwerke angebunden,
+    \item zwei On-Premises-Standorte per HA-VPN integriert,
+    \item dynamisches Routing mittels BGP implementiert,
+    \item ein zentrales Sicherheitskonzept umgesetzt,
+    \item sowie Monitoring und Logging eingerichtet werden.
+\end{itemize}
+
+Die Zielarchitektur soll hochverfügbar, skalierbar, standardisiert sowie einfach erweiterbar sein.
+
+\section{Anforderungsanalyse}
+
+\textbf{Funktionale Anforderungen:}
+\begin{itemize}
+    \item Kommunikation zwischen allen Standorten
+    \item Zentrale Verwaltung der Netzwerkverbindungen
+    \item Dynamisches Routing
+    \item Hochverfügbarkeit der VPN-Verbindungen
+    \item Zentrale Sicherheitsrichtlinien
+    \item Monitoring und Logging
+\end{itemize}
+
+\textbf{Nichtfunktionale Anforderungen:}
+\begin{itemize}
+    \item Skalierbarkeit
+    \item Wartbarkeit
+    \item Ausfallsicherheit
+    \item geringe Administrationskomplexität
+    \item DSGVO-konforme Protokollierung
+\end{itemize}
 
 \subsection{Lasten- und Pflichtenheft}
-Die aus dem Soll-Zustand abgeleiteten Anforderungen sind im folgenden Lasten- und Pflichtenheft zusammengefasst.
-
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
-\begin{tabular}{|p{0.2\textwidth}|p{0.35\textwidth}|p{0.35\textwidth}|}
+\begin{tabular}{|p{0.25\textwidth}|p{0.3\textwidth}|p{0.35\textwidth}|}
 \hline
-\textbf{Kategorie} & \textbf{Lastenheft (Kunde)} & \textbf{Pflichtenheft (Umsetzung)} \\ \hline
-Architektur & \raggedright Zentrale Verwaltung aller Netzwerke & \raggedright Aufbau eines NCC Hubs in der GCP \tabularnewline \hline
-Verfügbarkeit & \raggedright Ausfallsichere Standort-Anbindung & \raggedright Einsatz von HA Cloud VPN (Aktiv/Aktiv) \tabularnewline \hline
-Routing & \raggedright Automatischer Routenaustausch & \raggedright Konfiguration von Cloud Routern mit BGP \tabularnewline \hline
-Erweiterbarkeit & \raggedright Schnelle Anbindung neuer Filialen & \raggedright Standardisiertes Spoke-Design im NCC \tabularnewline \hline
-Sicherheit & \raggedright Schutz vor unbefugtem Zugriff & \raggedright Zentrale GCP Firewall-Regeln \tabularnewline \hline
+\textbf{Kategorie} & \textbf{Lastenheft (Kunde)} & \textbf{Pflichtenheft (Lösung)} \\ \hline
+Architektur & Zentrale Verwaltung & Aufbau eines GCP NCC Hubs \\ \hline
+Verfügbarkeit & Ausfallsichere Anbindung & Einsatz von HA Cloud VPN \\ \hline
+Routing & Automatischer Routenaustausch & Cloud Router mit BGP \\ \hline
+Sicherheit & Zentraler Schutz & GCP Firewall-Regeln (Default Deny) \\ \hline
 \end{tabular}
-\caption{Lasten- und Pflichtenheft}
+\caption{Tabellarisches Lasten- und Pflichtenheft}
 \end{table}
 
 \section{Stakeholder-Analyse}
-Für den Projekterfolg ist die Berücksichtigung aller relevanten Interessengruppen (Stakeholder) essenziell.
-
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
-\begin{tabular}{|p{0.25\textwidth}|p{0.15\textwidth}|p{0.15\textwidth}|p{0.35\textwidth}|}
+\begin{tabular}{|p{0.2\textwidth}|p{0.15\textwidth}|l|p{0.35\textwidth}|}
 \hline
 \textbf{Stakeholder} & \textbf{Rolle} & \textbf{Einfluss} & \textbf{Interesse} \\ \hline
-Naemi Kunak & Projektleitung & Hoch & \raggedright Erfolgreicher Projektabschluss \tabularnewline \hline
-C. Söldner & Projektbetreuer & Hoch & \raggedright Qualitätssicherung, Einhaltung Vorgaben \tabularnewline \hline
-IT-Leitung (Kunde) & Auftraggeber & Hoch & \raggedright Sichere und wartbare Infrastruktur \tabularnewline \hline
-Netzwerk-Admins & Anwender & Mittel & \raggedright Einfacher Betrieb, gutes Troubleshooting \tabularnewline \hline
+N. Kunak & Umsetzung & Hoch & Projekterfolg, IHK-Abschluss \\ \hline
+C. Söldner & Betreuer & Hoch & Qualität, Kundenzufriedenheit \\ \hline
+Kunde (IT) & Auftraggeber & Hoch & Stabile, sichere Infrastruktur \\ \hline
+Netzwerk-Admins & Anwender & Mittel & Geringer Wartungsaufwand \\ \hline
 \end{tabular}
 \caption{Stakeholder-Analyse}
 \end{table}
+
+\section{Wirtschaftlichkeitsbetrachtung}
+Die bisherige Architektur verursacht durch die manuelle Einrichtung von VPN-Tunneln und statischen Routen einen hohen administrativen Aufwand. Die neue NCC-basierte Architektur reduziert Fehlerquellen und verkürzt die Bereitstellungszeiten für neue Standorte erheblich.
+
+Die internen Personalkosten für die Projektumsetzung basieren auf einem fiktiven, marktüblichen Stundensatz für Systemadministratoren in Höhe von 70\,€.
+
+\textbf{Kostenübersicht (Einmalkosten):}
+\begin{table}[!ht]
+\centering
+\begin{tabular}{|p{0.6\textwidth}|r|}
+\hline
+\textbf{Position} & \textbf{Kosten} \\ \hline
+Projektarbeitszeit (40 Stunden $\times$ 70\,€) & 2.800,00\,€ \\ \hline
+Google Cloud Ressourcen (Einrichtung NCC Hub, Router) & 320,00\,€ \\ \hline
+Testumgebung (Temporäre VMs und Traffic) & 180,00\,€ \\ \hline
+\textbf{Gesamte Projektkosten} & \textbf{3.300,00\,€} \\ \hline
+\end{tabular}
+\caption{Einmalige Projektkosten}
+\end{table}
+
+\textbf{Laufende Betriebskosten (Google Cloud) pro Jahr:}
+\begin{table}[!ht]
+\centering
+\begin{tabular}{|p{0.6\textwidth}|r|}
+\hline
+\textbf{Position} & \textbf{Kosten} \\ \hline
+NCC Hub \& Spoke-Verbindungen (Grundgebühr) & 1.200,00\,€ \\ \hline
+HA VPN Tunnel (2 Standorte, redundante Tunnel) & 1.400,00\,€ \\ \hline
+Traffic (Egress-Datenverkehr, geschätzt) & 600,00\,€ \\ \hline
+\textbf{Gesamte Betriebskosten (p.\,a.)} & \textbf{3.200,00\,€} \\ \hline
+\end{tabular}
+\caption{Laufende Cloud-Kosten pro Jahr}
+\end{table}
+
+\textbf{Erwartete Einsparungen pro Jahr (Amortisation):} \\
+Durch die Automatisierung des Routings und die vereinfachte Verwaltung sinkt der monatliche Wartungsaufwand um schätzungsweise 6 Stunden. Zudem können geplante Standortanbindungen schneller realisiert werden.
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{|p{0.6\textwidth}|r|}
+\hline
+\textbf{Bereich} & \textbf{Einsparung} \\ \hline
+Reduzierter Administrationsaufwand (72 Stunden $\times$ 70\,€) & 5.040,00\,€ \\ \hline
+Vermeidung von Ausfallzeiten durch HA VPN (geschätzt) & 1.200,00\,€ \\ \hline
+\textbf{Gesamte Einsparungen (p.\,a.)} & \textbf{6.240,00\,€} \\ \hline
+\end{tabular}
+\caption{Erwartete jährliche Einsparungen}
+\end{table}
+
+\textbf{Fazit der Wirtschaftlichkeit:} \\
+Den laufenden Cloud-Kosten von 3.200,00\,€ stehen jährliche Einsparungen in Höhe von 6.240,00\,€ gegenüber. Es ergibt sich ein positiver Nettonutzen von \textbf{3.040,00\,€ pro Jahr}. Die initialen Projektkosten von 3.300,00\,€ amortisieren sich somit bereits nach \textbf{knapp 13 Monaten} (Return on Investment). Das Projekt ist aus wirtschaftlicher Sicht sehr profitabel.
+
+\section{Nutzwertanalyse}
+\begin{table}[!ht]
+\centering
+\begin{tabular}{|p{0.3\textwidth}|c|c|c|}
+\hline
+\textbf{Kriterium} & \textbf{Gewichtung} & \textbf{Klassische VPN-Mesh} & \textbf{NCC-Architektur} \\ \hline
+Skalierbarkeit & 30\,\% & 2 & 5 \\ \hline
+Wartbarkeit & 25\,\% & 2 & 5 \\ \hline
+Hochverfügbarkeit & 20\,\% & 3 & 5 \\ \hline
+Administrationsaufwand & 15\,\% & 2 & 5 \\ \hline
+Transparenz & 10\,\% & 2 & 4 \\ \hline
+\textbf{Gesamtnutzen} & \textbf{100\,\%} & \textbf{2,15} & \textbf{4,9} \\ \hline
+\end{tabular}
+\caption{Entscheidungsmatrix}
+\end{table}
+Die NCC-Architektur erzielt den deutlich höheren Gesamtnutzen.
 
 \section{Risikoanalyse}
 Während der Projektumsetzung können Risiken auftreten. Diese wurden im Vorfeld bewertet, um Gegenmaßnahmen zu definieren. Die Bewertung erfolgt auf einer Skala von 1 (niedrig) bis 3 (hoch).
@@ -57,17 +183,3 @@ Während der Projektumsetzung können Risiken auftreten. Diese wurden im Vorfeld
 \caption{Risikoanalyse}
 \end{table}
 
-\section{Schutzbedarfsanalyse}
-Da der Kunde im Finanzsektor tätig ist, werden die Anforderungen an die Informationssicherheit in Anlehnung an den IT-Grundschutz des BSI bewertet.
-
-\begin{table}[htbp]
-\centering
-\begin{tabular}{|p{0.2\textwidth}|p{0.1\textwidth}|p{0.6\textwidth}|}
-\hline
-\textbf{Schutzziel} & \textbf{Bedarf} & \textbf{Begründung und Maßnahme} \\ \hline
-Vertraulichkeit & Hoch & \raggedright Finanzdaten unterliegen strenger Regulatorik. Maßnahme: IPsec-Verschlüsselung (IKEv2) für alle Tunnel. \tabularnewline \hline
-Integrität & Hoch & \raggedright Daten dürfen bei der Übertragung nicht manipuliert werden. Maßnahme: Authentifizierung der BGP-Peers. \tabularnewline \hline
-Verfügbarkeit & Hoch & \raggedright Systeme müssen für Transaktionen erreichbar sein. Maßnahme: Redundante HA VPN-Tunnel (99,99 \% SLA). \tabularnewline \hline
-\end{tabular}
-\caption{Schutzbedarfsanalyse nach BSI}
-\end{table}
