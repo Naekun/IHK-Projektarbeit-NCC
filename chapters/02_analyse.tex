@@ -2,22 +2,72 @@
 \chapter{Analysephase}
 
 \section{Ist-Zustand}
-In der Ausgangssituation sind folgende Aspekte der historisch gewachsenen Netzwerkinfrastruktur problematisch:
-\begin{itemize}
-    \item Es gibt keine zentrale Verwaltung der hybriden Netzwerkverbindungen zwischen dem lokalen Rechenzentrum und der Cloud.
-    \item Bei der Anbindung weiterer Standorte fehlt die nötige Skalierbarkeit.
-    \item Die manuelle Routenkonfiguration ist komplex und fehleranfällig.
-    \item Die Sichtbarkeit der gesamten Netzwerktopologie ist stark eingeschränkt.
-    \item Es gibt keine einheitliche Sicherheitsrichtlinie.
-\end{itemize}
+Der Kunde betreibt aktuell ein On-Premises-Rechenzentrum sowie zwei externe Zweigstellen. In der GCP existieren zwei separate VPC-Netzwerke in unterschiedlichen geographischen Regionen. Die lokalen Standorte sind über einzelne, manuell konfigurierte IPsec-VPN-Tunnel mit den jeweiligen VPCs verbunden. 
 
-Dies führt zu einem hohen Administrationsaufwand und eingeschränkter Flexibilität.
+Das Routing erfolgt in der bisherigen Umgebung überwiegend statisch. Es existiert kein zentraler Netzwerkknoten. Wenn ein On-Premises-Standort mit einem anderen Cloud-Netzwerk kommunizieren muss, erfordert dies die manuelle Einrichtung neuer VPN-Tunnel und Anpassungen in den Routing-Tabellen. Diese fehlende Transparenz führt zu einem hohen Administrationsaufwand und widerspricht modernen Cloud-Architektur-Prinzipien.
 
-\section{Anforderungsanalyse}
-Die neue Infrastruktur muss folgende fachliche und technische Anforderungen erfüllen:
-\begin{itemize}
-    \item \textbf{Verfügbarkeit:} Ausfallsichere Anbindung durch HA VPN.
-    \item \textbf{Skalierbarkeit:} Einfaches Hinzufügen neuer Standorte und Netzwerke (Spoke-Architektur).
-    \item \textbf{Sicherheit:} Zentrale Cloud Firewall-Richtlinien.
-    \item \textbf{Betrieb:} Bereitstellung von Monitoring und einem Betriebshandbuch.
-\end{itemize}
+\section{Soll-Zustand}
+Zukünftig soll das gesamte Cloud-Netzwerk zentral über einen NCC Hub verwaltet werden. Die VPCs und die On-Premises-Standorte werden als sogenannte Spokes an diesen Hub angebunden. Das Routing soll vollständig dynamisch über das Border Gateway Protocol (BGP) erfolgen. Für die VPN-Anbindungen wird High Availability (HA) VPN gefordert, um eine Ausfallsicherheit von 99,99 \% zu gewährleisten.
+
+\subsection{Lasten- und Pflichtenheft}
+Die aus dem Soll-Zustand abgeleiteten Anforderungen sind im folgenden Lasten- und Pflichtenheft zusammengefasst.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|p{0.2\textwidth}|p{0.35\textwidth}|p{0.35\textwidth}|}
+\hline
+\textbf{Kategorie} & \textbf{Lastenheft (Kunde)} & \textbf{Pflichtenheft (Umsetzung)} \\ \hline
+Architektur & \raggedright Zentrale Verwaltung aller Netzwerke & \raggedright Aufbau eines NCC Hubs in der GCP \tabularnewline \hline
+Verfügbarkeit & \raggedright Ausfallsichere Standort-Anbindung & \raggedright Einsatz von HA Cloud VPN (Aktiv/Aktiv) \tabularnewline \hline
+Routing & \raggedright Automatischer Routenaustausch & \raggedright Konfiguration von Cloud Routern mit BGP \tabularnewline \hline
+Erweiterbarkeit & \raggedright Schnelle Anbindung neuer Filialen & \raggedright Standardisiertes Spoke-Design im NCC \tabularnewline \hline
+Sicherheit & \raggedright Schutz vor unbefugtem Zugriff & \raggedright Zentrale GCP Firewall-Regeln \tabularnewline \hline
+\end{tabular}
+\caption{Lasten- und Pflichtenheft}
+\end{table}
+
+\section{Stakeholder-Analyse}
+Für den Projekterfolg ist die Berücksichtigung aller relevanten Interessengruppen (Stakeholder) essenziell.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|p{0.25\textwidth}|p{0.15\textwidth}|p{0.15\textwidth}|p{0.35\textwidth}|}
+\hline
+\textbf{Stakeholder} & \textbf{Rolle} & \textbf{Einfluss} & \textbf{Interesse} \\ \hline
+Naemi Kunak & Projektleitung & Hoch & \raggedright Erfolgreicher Projektabschluss \tabularnewline \hline
+C. Söldner & Projektbetreuer & Hoch & \raggedright Qualitätssicherung, Einhaltung Vorgaben \tabularnewline \hline
+IT-Leitung (Kunde) & Auftraggeber & Hoch & \raggedright Sichere und wartbare Infrastruktur \tabularnewline \hline
+Netzwerk-Admins & Anwender & Mittel & \raggedright Einfacher Betrieb, gutes Troubleshooting \tabularnewline \hline
+\end{tabular}
+\caption{Stakeholder-Analyse}
+\end{table}
+
+\section{Risikoanalyse}
+Während der Projektumsetzung können Risiken auftreten. Diese wurden im Vorfeld bewertet, um Gegenmaßnahmen zu definieren. Die Bewertung erfolgt auf einer Skala von 1 (niedrig) bis 3 (hoch).
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|p{0.35\textwidth}|p{0.1\textwidth}|p{0.15\textwidth}|p{0.3\textwidth}|}
+\hline
+\textbf{Risiko} & \textbf{Eintritt} & \textbf{Auswirkung} & \textbf{Gegenmaßnahme} \\ \hline
+\raggedright Ausfall bestehender VPN-Tunnel bei der Migration & 2 & 3 & \raggedright Durchführung der Umstellung in einem definierten Wartungsfenster am Wochenende. \tabularnewline \hline
+\raggedright Fehlerhafte BGP-Routen blockieren den Traffic & 2 & 3 & \raggedright Vorheriger Test in einer isolierten Sandbox-Umgebung mit Test-VMs. \tabularnewline \hline
+\raggedright Zeitüberschreitung (40h Limit) & 1 & 2 & \raggedright Strikte Einhaltung des Projektstrukturplans und Einplanung von Pufferzeiten. \tabularnewline \hline
+\end{tabular}
+\caption{Risikoanalyse}
+\end{table}
+
+\section{Schutzbedarfsanalyse}
+Da der Kunde im Finanzsektor tätig ist, werden die Anforderungen an die Informationssicherheit in Anlehnung an den IT-Grundschutz des BSI bewertet.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|p{0.2\textwidth}|p{0.1\textwidth}|p{0.6\textwidth}|}
+\hline
+\textbf{Schutzziel} & \textbf{Bedarf} & \textbf{Begründung und Maßnahme} \\ \hline
+Vertraulichkeit & Hoch & \raggedright Finanzdaten unterliegen strenger Regulatorik. Maßnahme: IPsec-Verschlüsselung (IKEv2) für alle Tunnel. \tabularnewline \hline
+Integrität & Hoch & \raggedright Daten dürfen bei der Übertragung nicht manipuliert werden. Maßnahme: Authentifizierung der BGP-Peers. \tabularnewline \hline
+Verfügbarkeit & Hoch & \raggedright Systeme müssen für Transaktionen erreichbar sein. Maßnahme: Redundante HA VPN-Tunnel (99,99 \% SLA). \tabularnewline \hline
+\end{tabular}
+\caption{Schutzbedarfsanalyse nach BSI}
+\end{table}
