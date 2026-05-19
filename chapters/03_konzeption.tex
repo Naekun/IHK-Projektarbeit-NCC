@@ -1,17 +1,94 @@
 % ---------- Datei: chapters/03_konzeption.tex ----------
 \chapter{Konzeptionsphase}
 
-\section{Technologieauswahl}
-Zur Erfüllung der Anforderungen werden folgende Google Cloud Technologien eingesetzt:
+Die Konzeptionsphase ist der wichtigste Teil dieses Projekts. Das Ziel ist es, die aktiven Laufzeiten der Cloud-Ressourcen und damit die laufenden Kosten für den Kunden so gering wie möglich zu halten. Deshalb wurden alle Parameter wie IP-Adressen, ASN-Nummern und Firewall-Regeln im Voraus genau geplant. Diese detaillierte Vorbereitung ermöglicht es, die praktische Umsetzung in der Google Cloud schnell, fehlerfrei und in nur wenigen Stunden durchzuführen.
+
+\section{Technologieauswahl und Nutzwertanalyse}
+Um die lokalen Standorte mit der Cloud zu verbinden, wurden verschiedene Technologien verglichen. Die Entscheidung basiert auf einer Nutzwertanalyse, bei der Kosten und Verfügbarkeit die wichtigste Rolle spielten.
+
+Verglichen wurden folgende Optionen:
 \begin{itemize}
-    \item Network Connectivity Center (NCC)
-    \item VPC Networks und Cloud Router
-    \item Cloud VPN oder Cloud Interconnect
-    \item Cloud Firewall und Cloud Monitoring
+    \item \textbf{Option 1 (HA VPN):} Redundante Cloud-VPN-Tunnel über das Internet mit einer garantierten Verfügbarkeit von 99,99\,\%.
+    \item \textbf{Option 2 (Partner Interconnect):} Eine direkte und feste Leitung über einen Service-Provider.
+    \item \textbf{Option 3 (Klassisches Mesh):} Die Erweiterung der alten VPN-Struktur ohne zentrale Verwaltung.
 \end{itemize}
 
-\section{Netzwerkdesign und NCC-Architektur}
-Der NCC Hub bildet das Kernstück der neuen Architektur und fungiert als zentrale Verwaltungsplattform. Zwei VPC-Netzwerke in unterschiedlichen Regionen sowie zwei Zweigstellen werden als sogenannte Spokes an den Hub angebunden. Dies ermöglicht eine automatische Routenverteilung zwischen allen Spokes via Border Gateway Protocol (BGP).
+Die Bewertung erfolgt auf einer Skala von 1 (sehr schlecht) bis 5 (sehr gut).
 
-\section{Sicherheitskonzept und IP-Adressierung}
-Um überlappende Subnetze zwischen der Cloud und den lokalen Standorten zu vermeiden, wird ein strukturierter IP-Adressplan entworfen. Zusätzlich werden Firewall-Richtlinien konzipiert, die festlegen, welche Netzsegmente untereinander kommunizieren dürfen.
+\begin{table}[!ht]
+\centering
+\begin{tabular}{|p{0.3\textwidth}|c|c|c|c|}
+\hline
+\textbf{Kriterium} & \textbf{Gewichtung} & \textbf{Option 1} & \textbf{Option 2} & \textbf{Option 3} \\ \hline
+Ausfallsicherheit (SLA) & 30\,\% & 5 & 4 & 3 \\ \hline
+Skalierbarkeit & 30\,\% & 5 & 4 & 2 \\ \hline
+Kosten (Initial \& Laufend) & 20\,\% & 4 & 2 & 5 \\ \hline
+Administrationsaufwand & 20\,\% & 5 & 3 & 2 \\ \hline
+\textbf{Gesamtnutzen} & \textbf{100\,\%} & \textbf{4,8} & \textbf{3,4} & \textbf{2,9} \\ \hline
+\end{tabular}
+\caption{Nutzwertanalyse der Anbindungstechnologien}
+\end{table}
+
+\textbf{Entscheidung:} Option 1 (HA Cloud VPN mit NCC) erreicht das beste Ergebnis. Option 2 (Partner Interconnect) ist für die aktuellen Anforderungen des Kunden zu teuer und dauert in der Bereitstellung durch den Provider zu lange. Option 1 bietet die geforderte Ausfallsicherheit und ermöglicht eine schnelle und flexible Umsetzung des Projekts.
+
+\section{Netzwerkdesign und NCC-Architektur}
+Das neue Netzwerk wird als Hub-and-Spoke-Modell aufgebaut. Das Network Connectivity Center (NCC) dient dabei als zentraler Router in der Google Cloud. 
+
+Die Architektur besteht aus diesen Teilen:
+\begin{itemize}
+    \item \textbf{NCC Hub:} Die zentrale Verwaltungsebene in der Cloud.
+    \item \textbf{VPC Spokes:} Die Cloud-Netzwerke werden als Spokes (Speichen) an den Hub angebunden.
+    \item \textbf{VPN Spokes:} Die lokalen On-Premises-Standorte werden über ausfallsichere HA-VPN-Tunnel verbunden.
+    \item \textbf{Cloud Router:} Der Routenaustausch erfolgt automatisch über das BGP (Border Gateway Protocol).
+\end{itemize}
+
+Durch dieses Design lernt der Hub automatisch alle neuen Netzwerkrouten und verteilt sie an alle Standorte. Das manuelle Eintragen von statischen Routen ist nicht mehr nötig. Um Konflikte bei den IP-Adressen zu vermeiden, wurde die folgende Netzwerkplanung vorbereitet:
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{|p{0.25\textwidth}|p{0.2\textwidth}|p{0.25\textwidth}|p{0.15\textwidth}|}
+\hline
+\textbf{Komponente} & \textbf{Rolle} & \textbf{CIDR-Block} & \textbf{BGP ASN} \\ \hline
+NCC Hub Region 1 & Control Plane & N/A & 65001 \\ \hline
+VPC Cloud Workload & Spoke 1 & 10.10.0.0/24 & 65010 \\ \hline
+On-Premises HQ & Spoke 2 & 192.168.10.0/24 & 65020 \\ \hline
+On-Premises Branch & Spoke 3 & 192.168.20.0/24 & 65030 \\ \hline
+\end{tabular}
+\caption{Vorbereitete IP- und ASN-Planung für das BGP-Routing}
+\end{table}
+
+\section{Sicherheitskonzept und Zeitplanung}
+Das Sicherheitskonzept nutzt das \textit{Default-Deny}-Prinzip. Das bedeutet, dass die Firewall der Google Cloud standardmäßig allen Datenverkehr blockiert. Es werden nur notwendige Ausnahmen für den BGP-Traffic (Port 179), Ping-Tests (ICMP) und die benötigten Firmenanwendungen konfiguriert. 
+
+\subsection*{Strukturierte Deployment-Reihenfolge und Zeitplan}
+Um teure Leerlaufzeiten der Cloud-Ressourcen zu vermeiden, wurde eine feste Reihenfolge für die praktische Umsetzung geplant. Durch diese Vorbereitung kann die Infrastruktur Schritt für Schritt in wenigen Stunden aufgebaut werden. 
+
+Die folgende Tabelle zeigt die logische Abfolge der Schritte (Projektstrukturplan) sowie den dafür kalkulierten Zeitaufwand in der praktischen Realisierungsphase.
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{|p{0.05\textwidth}|p{0.45\textwidth}|p{0.25\textwidth}|p{0.1\textwidth}|}
+\hline
+\textbf{Nr.} & \textbf{Deployment-Schritt (Aktion)} & \textbf{Ergebnis} & \textbf{Dauer} \\ \hline
+1 & Erstellen der VPC-Netzwerke und Subnetze & Cloud-Netzwerk steht & 1,0\,h \\ \hline
+2 & Konfiguration Cloud Router und BGP-ASN & Routing vorbereitet & 1,5\,h \\ \hline
+3 & Aufbau der redundanten HA-VPN-Tunnel & Physische Verbindung & 2,5\,h \\ \hline
+4 & Erstellen des NCC Hubs & Zentrale Verwaltung & 1,0\,h \\ \hline
+5 & Anbinden der VPCs und VPNs als Spokes & BGP-Routing startet & 1,5\,h \\ \hline
+6 & Einrichten der Cloud Firewall-Regeln & Netzwerksicherheit & 1,5\,h \\ \hline
+7 & Starten von Test-VMs und Verbindungstests & Erfolgreicher Ping-Test & 2,0\,h \\ \hline
+8 & Löschen der temporären Test-VMs (Cleanup) & Kostenvermeidung & 0,5\,h \\ \hline
+\multicolumn{3}{|r|}{\textbf{Gesamtdauer der aktiven Realisierungsphase}} & \textbf{11,5\,h} \\ \hline
+\end{tabular}
+\caption{Deployment-Reihenfolge und Zeitplanung (Realisierungsphase)}
+\end{table}
+
+Zur visuellen Darstellung der gesamten Projektdauer (40 Stunden inklusive Planung, Konzeption und Dokumentation) wurde zusätzlich ein Gantt-Diagramm erstellt, das die Abhängigkeiten der einzelnen Phasen übersichtlich darstellt.
+
+\begin{figure}[!ht]
+\centering
+\rule{0.9\textwidth}{4.5cm} % Platzhalter für Gantt-Diagramm
+\caption{Gantt-Diagramm der gesamten zeitlichen Projektplanung}
+\end{figure}
+
+Diese genaue Planung stellt sicher, dass die anschließende praktische Umsetzung hochgradig effizient, schnell und kostensparend durchgeführt werden kann.
