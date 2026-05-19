@@ -1,14 +1,89 @@
 % ---------- Datei: chapters/04_realisierung.tex ----------
 \chapter{Realisierungsphase}
 
-\section{Implementierung der Infrastruktur}
-Die Umsetzung beginnt mit dem Setup des GCP-Projekts und der Bereitstellung der VPC-Netzwerke sowie deren Subnetze. Zur Überprüfung der Konnektivität werden isolierte Test-VMs bereitgestellt.
+Die Realisierungsphase wurde primär unter dem Aspekt der Kosten- und Zeitoptimierung durchgeführt. Anstatt die Netzwerkinfrastruktur zeitaufwendig und fehleranfällig über die grafische Benutzeroberfläche (GCP Console) zusammenzuklicken, wurde die gesamte Bereitstellung in zwei Phasen unterteilt: die Vorbereitungsphase und die Ausführungsphase.
 
-\section{Konfiguration des Network Connectivity Centers}
-Im nächsten Schritt wird der NCC Hub als zentrale Instanz eingerichtet. Die Cloud-Anbindung erfolgt durch die Integration der VPCs als Spokes an das NCC. 
+Dieses Vorgehen ermöglichte es, die teuren Cloud-Ressourcen (wie HA-VPN-Gateways, die stundenweise abgerechnet werden) erst im exakten Moment des Tests hochzufahren und nach erfolgreicher Validierung automatisiert wieder abzubauen. 
 
-\section{Cloud VPN und Routing}
-Für die sichere Anbindung der Zweigstellen werden HA Cloud VPN-Tunnel konfiguriert. Die Routenverteilung wird über BGP-Peerings auf dem Cloud Router realisiert. So werden Netzrouten automatisch zwischen den lokalen Netzwerken und der Cloud ausgetauscht.
+\section{Vorbereitungsphase (Skripting und Variablen)}
+In dieser Phase wurde das gesamte Deployment in Form von \texttt{gcloud}-Befehlen für das Command Line Interface (CLI) vorgeschrieben. Um Fehler durch Tippfehler (Typos) in einem iterativen Prozess zu vermeiden, wurden alle Bezeichnungen für Netzwerke, Regionen und IP-Adressen als globale Umgebungsvariablen definiert. 
 
-\section{Firewall und Monitoring}
-Abschließend werden die definierten Sicherheitsrichtlinien in der Cloud Firewall konfiguriert. Zur Überwachung des Netzwerkverkehrs wird das Google Cloud Monitoring eingerichtet.
+Auszug der initialen Variablen-Deklaration:
+
+\begin{lstlisting}[language=bash, caption={Definition der Umgebungsvariablen (Auszug)}]
+# Projekt- und Regionsparameter
+export PROJECT_ID="DEIN-PROJEKT-ID"
+export REGION="europe-west3"
+
+# Cloud-Umgebung
+export CLOUD_VPC="vpc-europe"
+export CLOUD_SUBNET="subnet-europe"
+export CLOUD_CIDR="10.10.0.0/24"
+export CLOUD_ROUTER="cr-europe"
+export CLOUD_ASN="65001"
+
+# Zweigstellen-Umgebung (On-Premises)
+export BRANCH_VPC="vpc-branch-a"
+export BRANCH_SUBNET="subnet-branch-a"
+export BRANCH_CIDR="192.168.1.0/24"
+export BRANCH_ASN="65002"
+\end{lstlisting}
+
+\section{Ausführungsphase (One-Pass Deployment)}
+Nach Abschluss der Skripterstellung konnte die gesamte Zielarchitektur in einem einzigen Durchgang (One-Pass) fehlerfrei in der Cloud hochgefahren werden. Die Ausführung erfolgte in der vorkonzipierten Reihenfolge.
+
+\subsection{VPCs, Subnetze und Firewall}
+Im ersten Schritt wurden die Basisnetzwerke im Custom-Subnet-Modus erstellt. Die Google Cloud Firewall wurde nach dem \textit{Default-Deny}-Prinzip konfiguriert, sodass nur explizit erlaubter interner Traffic (SSH und ICMP für Ping-Tests) zugelassen wird.
+
+\begin{lstlisting}[language=bash, caption={Erstellung der Basisnetzwerke und Firewall-Regeln}]
+# Basis-VPCs anlegen
+gcloud compute networks create "${CLOUD_VPC}" --subnet-mode=custom
+gcloud compute networks create "${BRANCH_VPC}" --subnet-mode=custom
+
+# Subnetze anlegen
+gcloud compute networks subnets create "${CLOUD_SUBNET}" \
+  --network="${CLOUD_VPC}" --region="${REGION}" --range="${CLOUD_CIDR}"
+
+# Firewall-Regeln anlegen (Least Privilege)
+gcloud compute firewall-rules create "fw-allow-internal-eu" \
+  --network="${CLOUD_VPC}" --allow tcp:22,icmp \
+  --source-ranges="${BRANCH_CIDR},35.235.240.0/20"
+\end{lstlisting}
+
+\subsection{HA-VPN und BGP-Routing}
+Anschließend wurden die Cloud Router für das dynamische BGP-Routing sowie die redundanten HA-VPN-Gateways hochgefahren. Der Aufbau der IPsec-Tunnel erfolgte unter der Nutzung eines sicheren \textit{Shared Secrets}. Die BGP-Sitzungen wurden über standardisierte APIPA-Adressen (169.254.x.x) konfiguriert.
+
+\begin{lstlisting}[language=bash, caption={Konfiguration der HA-VPN-Gateways und BGP-Sitzungen}]
+# Cloud Router anlegen
+gcloud compute routers create "${CLOUD_ROUTER}" \
+  --region="${REGION}" --network="${CLOUD_VPC}" --asn="${CLOUD_ASN}"
+
+# VPN-Gateways anlegen
+gcloud compute vpn-gateways create "${CLOUD_GW}" \
+  --network="${CLOUD_VPC}" --region="${REGION}"
+
+# IPsec Tunnel erstellen
+gcloud compute vpn-tunnels create "${TUN_EU_TO_BR_0}" \
+  --peer-gcp-gateway="${BRANCH_GW}" --region="${REGION}" \
+  --ike-version=2 --shared-secret="${SHARED_SECRET}" \
+  --router="${CLOUD_ROUTER}" --vpn-gateway="${CLOUD_GW}" --interface=0
+\end{lstlisting}
+
+\subsection{Network Connectivity Center (NCC)}
+Den Kern der Hub-and-Spoke-Architektur bildet das Network Connectivity Center. Der Hub wurde als zentrale Verwaltungsinstanz angelegt. Danach wurden die zuvor erstellten VPN-Tunnel als \textit{Spokes} an den Hub angebunden, um den nahtlosen Datentransfer zwischen den Netzwerken zu aktivieren.
+
+\begin{lstlisting}[language=bash, caption={Bereitstellung des NCC Hubs und der Spokes}]
+# Zentralen Hub erstellen
+gcloud network-connectivity hubs create "${HUB_NAME}" \
+  --description="Zentraler Hybrid Cloud Hub"
+
+# VPN-Tunnel als Spoke an den Hub anbinden
+gcloud network-connectivity spokes create "${SPOKE_NAME}" \
+  --hub="${HUB_NAME}" --global \
+  --vpn-tunnel="projects/${PROJECT_ID}/regions/${REGION}/vpnTunnels/${TUN_EU_TO_BR_0}" \
+  --site-to-site-data-transfer
+\end{lstlisting}
+
+Durch dieses vorstrukturierte \textit{Infrastructure-as-Code}-ähnliche Vorgehen dauerte die aktive Bereitstellung der gesamten komplexen Netzwerkarchitektur weniger als 30 Minuten, was das Projektbudget extrem schonte. 
+
+Die anschließende Bereitstellung von Test-VMs und das automatisierte Cleanup der Umgebung (Teardown) werden im folgenden Kapitel zur Test- und Qualitätssicherung behandelt.
