@@ -32,27 +32,26 @@ Administrationsaufwand & 20\,\% & 5 & 3 & 2 \\ \hline
 \textbf{Entscheidung:} Option 1 (HA Cloud VPN mit NCC) erreicht das beste Ergebnis. Option 2 (Partner Interconnect) ist für die aktuellen Anforderungen des Kunden zu teuer und dauert in der Bereitstellung durch den Provider zu lange. Option 1 bietet die geforderte Ausfallsicherheit und ermöglicht eine schnelle und flexible Umsetzung des Projekts.
 
 \section{Netzwerkdesign und NCC-Architektur}
-Das neue Netzwerk wird als Hub-and-Spoke-Modell aufgebaut. Das Network Connectivity Center (NCC) dient dabei als zentraler Router in der Google Cloud. 
+
+Das neue Netzwerk wird als Hub-and-Spoke-Modell aufgebaut. Das Network Connectivity Center (NCC) dient dabei als zentrale Verwaltungsebene in der Google Cloud. 
 
 Die Architektur besteht aus diesen Teilen:
 \begin{itemize}
-    \item \textbf{NCC Hub:} Die zentrale Verwaltungsebene in der Cloud.
+    \item \textbf{NCC Hub:} Die zentrale Verwaltungsebene für das Hybrid-Netzwerk.
     \item \textbf{VPC Spokes:} Die Cloud-Netzwerke werden als Spokes (Speichen) an den Hub angebunden.
     \item \textbf{VPN Spokes:} Die lokalen On-Premises-Standorte werden über ausfallsichere HA-VPN-Tunnel verbunden.
-    \item \textbf{Cloud Router:} Der Routenaustausch erfolgt automatisch über das BGP (Border Gateway Protocol).
+    \item \textbf{Cloud Router:} Der dynamische Routenaustausch erfolgt über das BGP (Border Gateway Protocol). \textbf{Wichtig:} Das BGP-Peering und die ASN (Autonomous System Number) werden technisch auf dem Cloud Router konfiguriert, welcher der jeweiligen VPC zugeordnet ist, und nicht auf dem NCC Hub selbst.
 \end{itemize}
 
-Durch dieses Design lernt der Hub automatisch alle neuen Netzwerkrouten und verteilt sie an alle Standorte. Das manuelle Eintragen von statischen Routen ist nicht mehr nötig. Um Konflikte bei den IP-Adressen zu vermeiden, wurde die folgende Netzwerkplanung vorbereitet:
+Durch dieses Design lernt das Netzwerk automatisch alle neuen Routen und verteilt sie an alle angebundenen Standorte. Das manuelle Eintragen von statischen Routen ist nicht mehr nötig. Um Konflikte bei den IP-Adressen zu vermeiden und eine klare Struktur für zukünftiges Wachstum zu schaffen, wurde die folgende Netzwerkplanung vorbereitet:
 
 \begin{table}[!ht]
 \centering
-\begin{tabular}{|p{0.25\textwidth}|p{0.2\textwidth}|p{0.25\textwidth}|p{0.15\textwidth}|}
+\begin{tabular}{|p{0.3\textwidth}|p{0.32\textwidth}|p{0.18\textwidth}|c|}
 \hline
-\textbf{Komponente} & \textbf{Rolle} & \textbf{CIDR-Block} & \textbf{BGP ASN} \\ \hline
-NCC Hub Region 1 & Control Plane & N/A & 65001 \\ \hline
-VPC Cloud Workload & Spoke 1 & 10.10.0.0/24 & 65010 \\ \hline
-On-Premises HQ & Spoke 2 & 192.168.10.0/24 & 65020 \\ \hline
-On-Premises Branch & Spoke 3 & 192.168.20.0/24 & 65030 \\ \hline
+\textbf{Komponente (Router)} & \textbf{Rolle im NCC-Design} & \textbf{CIDR-Block} & \textbf{BGP ASN} \\ \hline
+Cloud Router (VPC Europe) & Cloud-Ressourcen & 10.10.0.0/24 & 65001 \\ \hline
+Router Zweigstelle A & On-Premises (VPN Spoke) & 192.168.1.0/24 & 65002 \\ \hline
 \end{tabular}
 \caption{Vorbereitete IP- und ASN-Planung für das BGP-Routing}
 \end{table}

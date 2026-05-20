@@ -15,18 +15,35 @@ Auszug der initialen Variablen-Deklaration:
 export PROJECT_ID="PROJEKT-ID"
 export REGION="europe-west3"
 
-# Cloud-Umgebung
+# Cloud-Umgebung (Hub)
 export CLOUD_VPC="vpc-europe"
 export CLOUD_SUBNET="subnet-europe"
 export CLOUD_CIDR="10.10.0.0/24"
 export CLOUD_ROUTER="cr-europe"
 export CLOUD_ASN="65001"
+export CLOUD_GW="vpngw-europe"
 
-# Zweigstellen-Umgebung (On-Premises)
+# Zweigstellen-Umgebung (On-Premises / Spoke)
 export BRANCH_VPC="vpc-branch-a"
 export BRANCH_SUBNET="subnet-branch-a"
 export BRANCH_CIDR="192.168.1.0/24"
+export BRANCH_ROUTER="cr-branch-a"
 export BRANCH_ASN="65002"
+export BRANCH_GW="vpngw-branch-a"
+
+# NCC Hub & HA-VPN Shared Secret
+export HUB_NAME="ncc-hub-global"
+export SHARED_SECRET="secure-ikev2-key-2026"
+
+# Tunnel- und BGP-Parameter (Tunnel 0)
+export TUN_EU_TO_BR_0="tunnel-eu-to-br-0"
+export EU_BGP_0_IP="169.254.1.1"
+export BR_BGP_0_IP="169.254.1.2"
+
+# Tunnel- und BGP-Parameter (Tunnel 1)
+export TUN_EU_TO_BR_1="tunnel-eu-to-br-1"
+export EU_BGP_1_IP="169.254.2.1"
+export BR_BGP_1_IP="169.254.2.2"
 \end{lstlisting}
 
 \section{Ausführungsphase (One-Pass Deployment)}
@@ -44,29 +61,58 @@ gcloud compute networks create "${BRANCH_VPC}" --subnet-mode=custom
 gcloud compute networks subnets create "${CLOUD_SUBNET}" \
   --network="${CLOUD_VPC}" --region="${REGION}" --range="${CLOUD_CIDR}"
 
-# Firewall-Regeln anlegen (Least Privilege)
+gcloud compute networks subnets create "${BRANCH_SUBNET}" \
+  --network="${BRANCH_VPC}" --region="${REGION}" --range="${BRANCH_CIDR}"
+
+# Firewall-Regel Cloud (Erlaubt Traffic von Branch & IAP)
 gcloud compute firewall-rules create "fw-allow-internal-eu" \
   --network="${CLOUD_VPC}" --allow tcp:22,icmp \
   --source-ranges="${BRANCH_CIDR},35.235.240.0/20"
+
+# Firewall-Regel Branch (Erlaubt Traffic von Cloud & IAP)
+gcloud compute firewall-rules create "fw-allow-internal-branch" \
+  --network="${BRANCH_VPC}" --allow tcp:22,icmp \
+  --source-ranges="${CLOUD_CIDR},35.235.240.0/20"
 \end{lstlisting}
 
 \subsection{HA-VPN und BGP-Routing}
 Anschließend wurden die Cloud Router für das dynamische BGP-Routing sowie die redundanten HA-VPN-Gateways hochgefahren. Der Aufbau der IPsec-Tunnel erfolgte unter der Nutzung eines sicheren \textit{Shared Secrets}. Die BGP-Sitzungen wurden über standardisierte APIPA-Adressen (169.254.x.x) konfiguriert.
 
 \begin{lstlisting}[language=bash, caption={Konfiguration der HA-VPN-Gateways und BGP-Sitzungen}]
-# Cloud Router anlegen
+# 1. Cloud Router und HA-VPN-Gateway anlegen
 gcloud compute routers create "${CLOUD_ROUTER}" \
   --region="${REGION}" --network="${CLOUD_VPC}" --asn="${CLOUD_ASN}"
 
-# VPN-Gateways anlegen
 gcloud compute vpn-gateways create "${CLOUD_GW}" \
   --network="${CLOUD_VPC}" --region="${REGION}"
 
-# IPsec Tunnel erstellen
+# 2. IPsec Tunnel 0 (Interface 0) erstellen und BGP konfigurieren
 gcloud compute vpn-tunnels create "${TUN_EU_TO_BR_0}" \
   --peer-gcp-gateway="${BRANCH_GW}" --region="${REGION}" \
   --ike-version=2 --shared-secret="${SHARED_SECRET}" \
   --router="${CLOUD_ROUTER}" --vpn-gateway="${CLOUD_GW}" --interface=0
+
+gcloud compute routers add-interface "${CLOUD_ROUTER}" \
+  --interface-name="if-eu-to-br-0" --ip-address="${EU_BGP_0_IP}" \
+  --mask-length=30 --vpn-tunnel="${TUN_EU_TO_BR_0}" --region="${REGION}"
+
+gcloud compute routers add-bgp-peer "${CLOUD_ROUTER}" \
+  --peer-name="bgp-branch-a-0" --interface="if-eu-to-br-0" \
+  --peer-ip-address="${BR_BGP_0_IP}" --peer-asn="${BRANCH_ASN}" --region="${REGION}"
+
+# 3. IPsec Tunnel 1 (Interface 1 für Hochverfügbarkeit) erstellen und BGP konfigurieren
+gcloud compute vpn-tunnels create "${TUN_EU_TO_BR_1}" \
+  --peer-gcp-gateway="${BRANCH_GW}" --region="${REGION}" \
+  --ike-version=2 --shared-secret="${SHARED_SECRET}" \
+  --router="${CLOUD_ROUTER}" --vpn-gateway="${CLOUD_GW}" --interface=1
+
+gcloud compute routers add-interface "${CLOUD_ROUTER}" \
+  --interface-name="if-eu-to-br-1" --ip-address="${EU_BGP_1_IP}" \
+  --mask-length=30 --vpn-tunnel="${TUN_EU_TO_BR_1}" --region="${REGION}"
+
+gcloud compute routers add-bgp-peer "${CLOUD_ROUTER}" \
+  --peer-name="bgp-branch-a-1" --interface="if-eu-to-br-1" \
+  --peer-ip-address="${BR_BGP_1_IP}" --peer-asn="${BRANCH_ASN}" --region="${REGION}"
 \end{lstlisting}
 
 \subsection{Network Connectivity Center (NCC)}
@@ -77,10 +123,11 @@ Den Kern der Hub-and-Spoke-Architektur bildet das Network Connectivity Center. D
 gcloud network-connectivity hubs create "${HUB_NAME}" \
   --description="Zentraler Hybrid Cloud Hub"
 
-# VPN-Tunnel als Spoke an den Hub anbinden
-gcloud network-connectivity spokes create "${SPOKE_NAME}" \
+# Beide VPN-Tunnel als redundanten Spoke an den Hub anbinden
+gcloud network-connectivity spokes create "spoke-branch-a" \
   --hub="${HUB_NAME}" --global \
   --vpn-tunnel="projects/${PROJECT_ID}/regions/${REGION}/vpnTunnels/${TUN_EU_TO_BR_0}" \
+  --vpn-tunnel="projects/${PROJECT_ID}/regions/${REGION}/vpnTunnels/${TUN_EU_TO_BR_1}" \
   --site-to-site-data-transfer
 \end{lstlisting}
 
