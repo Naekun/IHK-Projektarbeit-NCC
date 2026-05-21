@@ -2,28 +2,40 @@
 \chapter{Projektabschluss}
 
 \section{Soll-Ist-Vergleich}
-Alle definierten Ziele wurden erfolgreich umgesetzt. Die historische Netzwerkstruktur wurde durch eine zentral administrierbare, skalierbare NCC-Architektur abgelöst. Das automatisierte BGP-Routing reduziert die Fehleranfälligkeit deutlich.
+Alle Projektziele wurden erreicht. Die alte VPN-Struktur wurde durch eine zentrale NCC-Architektur ersetzt. Das BGP-Routing und die redundanten Tunnel erfüllen die Anforderungen an Verfügbarkeit und Betrieb.
 
-\section{Wirtschaftlichkeitsbetrachtung und Zeitaufwand}
-Die geplante Projektzeit von 40 Stunden wurde eingehalten.
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
-\begin{tabular}{lrr}
-\toprule
-\textbf{Projektphase} & \textbf{Geplant (h)} & \textbf{Ist (h)} \\
-\midrule
-Planung & 8 & 8 \\
-Vorbereitung & 6 & 6 \\
-Durchführung & 12 & 12 \\
-Test und QA & 5 & 5 \\
-Übergabe & 3 & 3 \\
-Dokumentation & 6 & 6 \\
-\midrule
-\textbf{Gesamt} & \textbf{40} & \textbf{40} \\
-\bottomrule
+\begin{tabular}{|p{0.33\textwidth}|p{0.28\textwidth}|p{0.28\textwidth}|}
+\hline
+\textbf{Ziel} & \textbf{Soll} & \textbf{Ist} \\ \hline
+Zentrale Steuerung & NCC-Hub & Erreicht \\ \hline
+Standortanbindung & HA-VPN & Erreicht \\ \hline
+Routing & BGP & Erreicht \\ \hline
+Sicherheit & Firewall Default-Deny & Erreicht \\ \hline
+Monitoring & Zentrale Überwachung & Erreicht \\ \hline
 \end{tabular}
-\caption{Vergleich der geplanten und tatsächlichen Projektzeiten}
+\caption{Soll-Ist-Vergleich}
 \end{table}
 
-\section{Lessons Learned und Ausblick}
-Das Projekt hat bestätigt, wie effizient das Google Cloud Network Connectivity Center die Verwaltung hybrider Netzwerke vereinfacht. Der Kunde plant nun, weitere Niederlassungen mit dieser standardisierten Konfiguration schnell und sicher anzubinden.
+\section{Zeitaufwand}
+Die Projektzeit von 40 Stunden wurde insgesamt leicht unterschritten. Die größte Zeitersparnis entstand in der Durchführung, weil die Konfiguration vorher genau vorbereitet wurde.
+
+\begin{table}[!ht]
+\centering
+\begin{tabular}{|p{0.34\textwidth}|c|c|}
+\hline
+\textbf{Projektphase} & \textbf{Geplant (h)} & \textbf{Ist (h)} \\ \hline
+Planung & 8 & 8 \\ \hline
+Vorbereitung & 6 & 7,5 \\ \hline
+Durchführung & 12 & 10 \\ \hline
+Test und QA & 5 & 5 \\ \hline
+Übergabe & 3 & 3 \\ \hline
+Dokumentation & 6 & 6 \\ \hline
+\textbf{Gesamt} & \textbf{40} & \textbf{39,5} \\ \hline
+\end{tabular}
+\caption{Zeitvergleich}
+\end{table}
+
+\section{Fazit}
+Das Projekt zeigt, dass gute Vorplanung die Umsetzung deutlich vereinfacht. Die Kombination aus NCC, HA VPN und BGP ist für hybride Netzwerke gut geeignet. Die Architektur ist skalierbar und kann später mit wenig Aufwand erweitert werden.

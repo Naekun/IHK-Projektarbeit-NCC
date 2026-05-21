@@ -1,11 +1,20 @@
-% ---------- Datei: chapters/06_uebergabe.tex ----------
+% ---------- Datei: chapters/06_uebergabe_und_betrieb.tex ----------
 \chapter{Übergabe und Betrieb}
 
-\section{Monitoring und Alerting}
-Für einen reibungslosen IT-Betrieb wurden Monitoring-Dashboards in der Google Cloud erstellt. Diese visualisieren den Netzwerkdurchsatz und den Status der VPN-Tunnel. Bei einem Ausfall eines VPN-Tunnels wird das Administrationsteam automatisch per Alerting benachrichtigt.
+\section{Monitoring}
+Zur Überwachung wurde die \textit{Network Topology} in der Google Cloud genutzt. Sie zeigt die Hub-and-Spoke-Struktur und die aktiven Verbindungen.
 
-\section{Betriebshandbuch}
-Alle durchgeführten Konfigurationen sowie Anleitungen zur Störungsbehebung wurden in einem Betriebshandbuch dokumentiert. Dieses dient den Administratoren des Kunden als Nachschlagewerk.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{images/Monitoring.png}
+\caption{Netzwerktopologie}
+\end{figure}
 
-\section{Kundeneinweisung}
-Zum Abschluss der Implementierung erfolgte eine Übergabe an das IT-Personal des Kunden. Dabei wurden die Dashboards demonstriert und die Schritte zur Anbindung zukünftiger Spoke-Standorte erläutert.
+\section{Übergabe und Cleanup}
+Bei der Übergabe wurden die wichtigsten Funktionen erklärt. Die temporären Ressourcen wurden nach Abschluss der Tests manuell entfernt, damit keine unnötigen Cloud-Kosten entstehen.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{images/Clean-up.png}
+\caption{Cleanup}
+\end{figure}

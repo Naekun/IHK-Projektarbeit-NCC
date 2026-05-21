@@ -1,14 +1,40 @@
-% ---------- Datei: chapters/05_test_qa.tex ----------
+% ---------- Datei: chapters/05_test_und_qa.tex ----------
 \chapter{Test- und Qualitätssicherung}
 
 \section{Testkonzept}
-Um die fehlerfreie Funktion der neuen Architektur zu gewährleisten, wurde ein Testkonzept entworfen. Dieses umfasst Konnektivitäts-, Routing- und Performancetests.
+Die Tests prüfen nur die im Projekt nachgewiesenen Funktionen: Erreichbarkeit, Routing und Failover. Für die Testphase wurden temporär öffentliche IP-Adressen und eine SSH-Regel verwendet, da der Zugriff über IAP im Ausbildungsprojekt nicht vollständig verfügbar war. Der eigentliche Testverkehr lief über die internen IPs \texttt{10.10.x.x} und \texttt{192.168.x.x}.
 
-\section{Durchführung der Tests}
-\begin{itemize}
-    \item \textbf{Konnektivitätstests:} Durch Ping- und Traceroute-Befehle von den Test-VMs zu den lokalen Ressourcen wurde die generelle Erreichbarkeit geprüft.
-    \item \textbf{Routing-Validierung:} Durch die Deaktivierung eines VPN-Tunnels der redundanten Anbindung wurde das automatische Failover des BGP-Routings erfolgreich getestet.
-    \item \textbf{Sicherheitstests:} Die korrekte Filterung durch die Firewall-Regeln wurde anhand von Verbindungsversuchen auf unzulässige Ports validiert.
-\end{itemize}
+\section{Durchführung}
+Die Tests wurden direkt nach dem Deployment durchgeführt. Der Ping-Test war erfolgreich. Die Verbindung zwischen den Test-VMs war stabil und ohne Paketverlust.
 
-Die detaillierten Testprotokolle befinden sich im Anhang.
+Der Traceroute-Test wurde mit ICMP ausgeführt, damit der Pfad über das VPN sichtbar wurde. Auf den Screenshots ist zu sehen, dass der Datenverkehr über die interne VPN-Verbindung läuft.
+
+\subsection{Failover}
+Für den Failover-Test wurde die BGP-Sitzung von \textit{Tunnel 0} entfernt. Nach kurzer Zeit lief der Verkehr automatisch über \textit{Tunnel 1} weiter. Damit wurde die Redundanz der Verbindung nachgewiesen.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{images/Failover.png}
+\caption{Failover-Test}
+\end{figure}
+
+\subsection{Routing}
+Die BGP-Routen wurden im Cloud Router geprüft. Auf dem Screenshot ist zu sehen, dass die Routen korrekt gelernt wurden und die beiden Tunnel als aktiv angezeigt werden.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{images/BGP-Routes.png}
+\caption{BGP-Routen}
+\end{figure}
+
+\subsection{Firewall}
+Die Firewall-Regeln wurden so gesetzt, dass nur notwendiger Testverkehr erlaubt war. Damit wurde das Default-Deny-Prinzip bestätigt. Die Regeln für die Testphase wurden nach Abschluss wieder entfernt.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{images/Firewall_rules.png}
+\caption{Firewall-Regeln}
+\end{figure}
+
+\section{Ergebnis}
+Alle Testfälle waren erfolgreich. Die Verbindung zwischen Cloud und On-Premises war stabil, das Routing funktionierte dynamisch und das Failover auf den zweiten Tunnel wurde korrekt ausgeführt.
