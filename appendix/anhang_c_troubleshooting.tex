@@ -6,15 +6,14 @@ Während der Implementierung und Testphase der hybriden Netzwerkarchitektur trat
 Der Leitfaden dokumentiert ausschließlich reale Szenarien aus der Projektdurchführung. Dazu gehören im Detail:
 
 \begin{itemize}
-    \item \textbf{IAP-Zugriff nicht möglich:} Temporärer Workaround für noch fehlende IAM-Berechtigungen durch Zuweisung externer IP-Adressen für den eng begrenzten Testzeitraum.
+    \item \textbf{IAP-Zugriff nicht möglich:} Temporärer Workaround für noch fehlende IAM-Rolen durch Zuweisung externer IP-Adressen für den eng begrenzten Testzeitraum.
     \item \textbf{Traceroute-Fehlschlag:} Anpassung der Test-Parameter auf ICMP (statt UDP), da der reguläre UDP-Traffic durch die strikten Firewall-Regeln blockiert wurde.
     \item \textbf{Veraltete NCC-Syntax:} Lösung von CLI-Fehlern durch die Verwendung des aktualisierten \texttt{gcloud}-Befehls (\texttt{linked-vpn-tunnels create}) zur Spoke-Anbindung.
-    \item \textbf{BGP-Statusanzeige:} Korrekte Interpretation der \texttt{gcloud}-Ausgabe, da für ein aktives BGP-Peering betrieblich der Status \texttt{UP} (statt \texttt{ESTABLISHED}) angezeigt wird.
     \item \textbf{Manueller Failover-Test:} Gezieltes Entfernen eines BGP-Peers zur künstlichen Herbeiführung eines Ausfalls und Überprüfung der automatischen Umschaltung.
     \item \textbf{Rückbau-Abhängigkeiten:} Definition der strikten Löschreihenfolge, um Fehler bei der Entfernung verknüpfter Ressourcen (wie Hubs, Spokes und Tunnel) zu vermeiden.
 \end{itemize}
 
-Diese strukturierte Sammlung an Fehlerbildern und Workarounds dient als wertvolle Wissensbasis für zukünftige Deployments, Übergaben an den Betrieb und die allgemeine Fehleranalyse.
+Diese strukturierte Sammlung an Fehlerbildern und Workarounds dient als wertvolle Wissensbasis für zukünftige Deployments, Übergaben und die allgemeine Fehleranalyse.
 
 Das vollständige Troubleshooting-Dokument ist im GitHub-Repository verfügbar:
 
@@ -22,5 +21,7 @@ Das vollständige Troubleshooting-Dokument ist im GitHub-Repository verfügbar:
 \noindent\url{https://github.com/Naekun/IHK-Projektarbeit-NCC/blob/main/troubleshooting.md}
 
 \vspace{0.5cm}
-\noindent\includegraphics[width=0.33\textwidth]{images/QR_Code_Troubleshooting.png} \\[0.2cm]
-\small\textit{QR-Code zum Troubleshooting-Leitfaden}
+\begin{flushright}
+    \includegraphics[width=0.28\textwidth]{images/QR_Code_Troubleshooting.png} \\[0.2cm]
+    \small\textit{QR-Code zum Troubleshooting-Leitfaden}
+\end{flushright}

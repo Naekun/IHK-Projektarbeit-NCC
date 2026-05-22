@@ -1,8 +1,14 @@
 % ---------- Datei: frontmatter/inhalt.tex ----------
+
+% --- Abbildungsverzeichnis ---
 \tableofcontents
 \clearpage
 \listoffigures
-\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
-\clearpage
+
+\vspace{1cm} 
+
+% --- Tabellenverzeichnis ---
+\begingroup
+\let\clearpage\relax 
 \listoftables
-\addcontentsline{toc}{chapter}{Tabellenverzeichnis}
+\endgroup

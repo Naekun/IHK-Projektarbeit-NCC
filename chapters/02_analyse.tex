@@ -46,19 +46,19 @@ Ziel des Projekts ist die Konzeption und Implementierung einer zentralen, hybrid
 \end{itemize}
 
 \subsection{Lasten- und Pflichtenheft}
-Die abgeleiteten Anforderungen werden im folgenden Lasten- und Pflichtenheft zusammengefasst.
+Die abgeleiteten Anforderungen werden im folgenden Auszug von Lasten- und Pflichtenheft zusammengefasst.
 
 \begin{table}[!ht]
 \centering
-\begin{tabular}{|p{0.25\textwidth}|p{0.3\textwidth}|p{0.35\textwidth}|}
+\begin{tabularx}{\textwidth}{|l|X|X|}
 \hline
 \textbf{Kategorie} & \textbf{Lastenheft (Kunde)} & \textbf{Pflichtenheft (Lösung)} \\ \hline
 Architektur & Zentrale Verwaltung & Aufbau eines GCP NCC Hubs \\ \hline
 Verfügbarkeit & Ausfallsichere Anbindung & Einsatz von HA Cloud VPN \\ \hline
 Routing & Automatischer Routenaustausch & Cloud Router mit BGP \\ \hline
 Sicherheit & Zentraler Schutz & GCP Firewall-Regeln (Default Deny) \\ \hline
-\end{tabular}
-\caption{Tabellarisches Lasten- und Pflichtenheft}
+\end{tabularx}
+\caption{Auszug aus Lasten- und Pflichtenheft}
 \end{table}
 
 \section{Stakeholder-Analyse}
@@ -66,14 +66,14 @@ Für einen reibungslosen Projektablauf müssen die Interessen aller beteiligten 
 
 \begin{table}[!ht]
 \centering
-\begin{tabular}{|p{0.25\textwidth}|p{0.15\textwidth}|l|p{0.35\textwidth}|}
+\begin{tabularx}{\textwidth}{|l|l|l|X|}
 \hline
 \textbf{Stakeholder} & \textbf{Rolle} & \textbf{Einfluss} & \textbf{Interesse} \\ \hline
 N. Kunak & Prüfling & Hoch & Projekterfolg, IHK-Abschluss \\ \hline
 C. Söldner & Projektbetreuer & Hoch & Qualität, Kundenzufriedenheit \\ \hline
 Kunde (IT-Leitung) & Auftraggeber & Hoch & Stabile, sichere Infrastruktur \\ \hline
 Netzwerk-Admins & Anwender & Mittel & Geringer Wartungsaufwand \\ \hline
-\end{tabular}
+\end{tabularx}
 \caption{Stakeholder-Analyse}
 \end{table}
 
