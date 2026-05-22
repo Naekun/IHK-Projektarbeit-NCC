@@ -25,7 +25,7 @@ Mit zunehmender Anzahl angebundener Standorte steigt die Komplexität der besteh
 Zusätzlich existieren keine zentralen Monitoring-Mechanismen zur Überwachung der hybriden Netzwerkverbindungen. Dies verursacht einen erhöhten administrativen Aufwand im Tagesgeschäft.
 
 \section{Soll-Zustand und Projektziel}
-Ziel des Projekts ist die Konzeption und Implementierung einer zentralen, hybriden Netzwerkarchitektur innerhalb der Google Cloud. Die neue Infrastruktur soll hochverfügbar, skalierbar und standardisiert sein. Die manuelle Routenpflege soll durch ein dynamisches Routing-Protokoll abgelöst werden. Zudem muss ein zentrales Sicherheits- und Monitoring-Konzept etabliert werden, um den administrativen Aufwand zukünftig zu minimieren.
+Ziel des Projekts ist die Konzeption und Implementierung einer zentralen, hybriden Netzwerkarchitektur innerhalb der Google Cloud. Die neue Infrastruktur soll hochverfügbar, skalierbar und standardisiert sein. Die manuelle Routenpflege soll durch ein dynamisches Routing-Protokoll abgelöst werden.
 
 \section{Anforderungsanalyse}
 
@@ -36,7 +36,6 @@ Ziel des Projekts ist die Konzeption und Implementierung einer zentralen, hybrid
     \item Dynamisches Routing zum automatischen Austausch von IP-Präfixen
     \item Hochverfügbarkeit (HA) der VPN-Tunnel
     \item Zentrale Durchsetzung von Firewall-Richtlinien
-    \item Einrichtung von systemweitem Monitoring und Logging
 \end{itemize}
 
 \textbf{Nichtfunktionale Anforderungen:}
@@ -44,7 +43,6 @@ Ziel des Projekts ist die Konzeption und Implementierung einer zentralen, hybrid
     \item Hohe Skalierbarkeit für zukünftige Standortanbindungen
     \item Einfache Wartbarkeit und geringe Administrationskomplexität
     \item Hohe Ausfallsicherheit (SLA 99,99\,\%)
-    \item DSGVO-konforme Protokollierung der Zugriffe
 \end{itemize}
 
 \subsection{Lasten- und Pflichtenheft}
@@ -105,7 +103,6 @@ Während der Projektumsetzung können verschiedene Risiken auftreten. Diese wurd
 \raggedright Überschneidung von IP-Adressbereichen (Cloud vs. On-Premises) & \raggedright 2 & \raggedright 3 & \raggedright Vorab einen detaillierten IP-Adressplan erstellen und mit dem Kunden abgleichen. \tabularnewline \hline
 \raggedright Verzögerung durch fehlende IAM-Berechtigungen in der GCP & \raggedright 2 & \raggedright 2 & \raggedright Benötigte Rollen (z.\,B. Network Admin) frühzeitig beim Kunden beantragen und testen. \tabularnewline \hline
 \raggedright Fehlerhafte BGP-Parameter (z.\,B. falsche AS-Nummer) & \raggedright 1 & \raggedright 3 & \raggedright Konfiguration im Vier-Augen-Prinzip prüfen und in isolierter Testumgebung validieren. \tabularnewline \hline
-\raggedright Längere Netzwerkausfälle während der Live-Umstellung & \raggedright 2 & \raggedright 3 & \raggedright Wartungsfenster am Wochenende nutzen. Einen klaren Rollback-Plan definieren. \tabularnewline \hline
 \end{tabular}
 \caption{Risikoanalyse (Skala: 1=niedrig, 2=mittel, 3=hoch)}
 \end{table}

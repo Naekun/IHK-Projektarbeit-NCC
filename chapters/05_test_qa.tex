@@ -9,15 +9,6 @@ Die Tests wurden direkt nach dem Deployment durchgeführt. Der Ping-Test war erf
 
 Der Traceroute-Test wurde mit ICMP ausgeführt, damit der Pfad über das VPN sichtbar wurde. Auf den Screenshots ist zu sehen, dass der Datenverkehr über die interne VPN-Verbindung läuft.
 
-\subsection{Failover}
-Für den Failover-Test wurde die BGP-Sitzung von \textit{Tunnel 0} entfernt. Nach kurzer Zeit lief der Verkehr automatisch über \textit{Tunnel 1} weiter. Damit wurde die Redundanz der Verbindung nachgewiesen.
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=0.9\textwidth]{images/Failover.png}
-\caption{Failover-Test}
-\end{figure}
-
 \subsection{Routing}
 Die BGP-Routen wurden im Cloud Router geprüft. Auf dem Screenshot ist zu sehen, dass die Routen korrekt gelernt wurden und die beiden Tunnel als aktiv angezeigt werden.
 
@@ -28,13 +19,23 @@ Die BGP-Routen wurden im Cloud Router geprüft. Auf dem Screenshot ist zu sehen,
 \end{figure}
 
 \subsection{Firewall}
-Die Firewall-Regeln wurden so gesetzt, dass nur notwendiger Testverkehr erlaubt war. Damit wurde das Default-Deny-Prinzip bestätigt. Die Regeln für die Testphase wurden nach Abschluss wieder entfernt.
+Die Firewall-Regeln wurden so gesetzt, dass nur notwendiger Testverkehr erlaubt war. Damit wurde das Default-Deny-Prinzip bestätigt.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.9\textwidth]{images/Firewall_rules.png}
 \caption{Firewall-Regeln}
 \end{figure}
+
+\subsection{Failover}
+Für den Failover-Test wurde die BGP-Sitzung von \textit{Tunnel 0} entfernt. Nach kurzer Zeit lief der Verkehr automatisch über \textit{Tunnel 1} weiter. Damit wurde die Redundanz der Verbindung nachgewiesen.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{images/Failover.png}
+\caption{Failover-Test}
+\end{figure}
+
 
 \section{Ergebnis}
 Alle Testfälle waren erfolgreich. Die Verbindung zwischen Cloud und On-Premises war stabil, das Routing funktionierte dynamisch und das Failover auf den zweiten Tunnel wurde korrekt ausgeführt.

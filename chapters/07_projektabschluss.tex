@@ -2,7 +2,7 @@
 \chapter{Projektabschluss}
 
 \section{Soll-Ist-Vergleich}
-Alle Projektziele wurden erreicht. Die alte VPN-Struktur wurde durch eine zentrale NCC-Architektur ersetzt. Das BGP-Routing und die redundanten Tunnel erfüllen die Anforderungen an Verfügbarkeit und Betrieb.
+Alle im Projektantrag definierten Ziele wurden erfolgreich erreicht. Eine zentral verwaltete Hub-and-Spoke-Architektur mit dem Google Cloud Network Connectivity Center (NCC) hat die alte, unübersichtliche VPN-Struktur abgelöst. Das neue Setup mit HA VPN und dynamischem BGP-Routing läuft stabil und bietet die geforderte Ausfallsicherheit. Auch die Sicherheitsvorgaben (Default-Deny in der Firewall) und das zentrale Monitoring habe ich wie geplant umgesetzt.
 
 \begin{table}[!ht]
 \centering
@@ -11,15 +11,15 @@ Alle Projektziele wurden erreicht. Die alte VPN-Struktur wurde durch eine zentra
 \textbf{Ziel} & \textbf{Soll} & \textbf{Ist} \\ \hline
 Zentrale Steuerung & NCC-Hub & Erreicht \\ \hline
 Standortanbindung & HA-VPN & Erreicht \\ \hline
-Routing & BGP & Erreicht \\ \hline
+Routing & BGP (dynamisch) & Erreicht \\ \hline
 Sicherheit & Firewall Default-Deny & Erreicht \\ \hline
 Monitoring & Zentrale Überwachung & Erreicht \\ \hline
 \end{tabular}
-\caption{Soll-Ist-Vergleich}
+\caption{Soll-Ist-Vergleich der Projektziele}
 \end{table}
 
 \section{Zeitaufwand}
-Die Projektzeit von 40 Stunden wurde insgesamt leicht unterschritten. Die größte Zeitersparnis entstand in der Durchführung, weil die Konfiguration vorher genau vorbereitet wurde.
+Die geplante Projektzeit von 40 Stunden habe ich mit 39,5 Stunden leicht unterschritten. Es hat kleine zeitliche Verschiebungen zwischen den Phasen gegeben: Ich habe in der Vorbereitung etwas mehr Zeit investiert (+1,5\,h), um das Skripting für das Deployment genau auszuarbeiten. Diese gute Vorarbeit hat sich jedoch ausgezahlt, da die eigentliche Bereitstellung in der Cloud dadurch deutlich schneller und fast fehlerfrei abgelaufen ist (-2,0\,h).
 
 \begin{table}[!ht]
 \centering
@@ -34,8 +34,13 @@ Test und QA & 5 & 5 \\ \hline
 Dokumentation & 6 & 6 \\ \hline
 \textbf{Gesamt} & \textbf{40} & \textbf{39,5} \\ \hline
 \end{tabular}
-\caption{Zeitvergleich}
+\caption{Gegenüberstellung des geplanten und tatsächlichen Zeitaufwands}
 \end{table}
 
-\section{Fazit}
-Das Projekt zeigt, dass gute Vorplanung die Umsetzung deutlich vereinfacht. Die Kombination aus NCC, HA VPN und BGP ist für hybride Netzwerke gut geeignet. Die Architektur ist skalierbar und kann später mit wenig Aufwand erweitert werden.
+\section{Fazit und Ausblick}
+Das Projekt zeigt deutlich, dass der Wechsel zu einer zentralen NCC-Architektur in der Google Cloud den Administrationsaufwand im Netzwerk stark reduziert. Durch die Automatisierung des Routings ist die Infrastruktur nun sehr gut skalierbar und lässt sich später mit wenig Aufwand um neue Standorte erweitern.
+
+\textbf{Einfluss und Mehrwert von Künstlicher Intelligenz (KI)} \\
+Der gezielte Einsatz von Künstlicher Intelligenz hat einen sehr wichtigen Beitrag zum Projekterfolg geleistet. In der heutigen IT-Praxis ist KI ein unverzichtbares Werkzeug für die schnelle Informationsbeschaffung und Fehlersuche geworden. Wenn während des Deployments unerwartete Probleme aufgetreten sind -- zum Beispiel durch die geänderte \texttt{gcloud}-Syntax für die NCC-Spokes oder unklare BGP-Statusmeldungen -- hat die KI enorm dabei geholfen, die Ursachen sofort zu verstehen. Statt lange in verschiedenen Foren und Dokumentationen zu suchen, habe ich durch gezielte Prompts sehr schnell funktionierende Lösungswege erarbeitet.
+
+Aber auch nach dem eigentlichen Deployment hat die KI einen großen Mehrwert gebracht. Sie hat mich maßgeblich dabei unterstützt, die Konfigurationen zu analysieren und die Dokumentation auszuarbeiten. So sind die gefundenen Lösungen direkt in ein sauberes Betriebshandbuch und einen strukturierten Troubleshooting-Leitfaden eingeflossen. Das Projekt beweist, dass ein solides IT-Grundwissen kombiniert mit der intelligenten Nutzung von KI die Effizienz, die Fehlerbehebung und die Qualität der Dokumentation in Cloud-Projekten stark verbessert.
