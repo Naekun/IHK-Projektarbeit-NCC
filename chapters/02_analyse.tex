@@ -82,13 +82,13 @@ Da der Kunde im Finanzsektor tätig ist, unterliegen die übertragenen Daten str
 
 \begin{table}[!ht]
 \centering
-\begin{tabular}{|p{0.2\textwidth}|p{0.12\textwidth}|p{0.58\textwidth}|}
+\begin{tabularx}{\textwidth}{|l|l|X|}
 \hline
-\textbf{Schutzziel} & \textbf{Bedarf} & \textbf{Begründung und Maßnahme} \tabularnewline \hline
-\raggedright Vertraulichkeit & \raggedright Hoch & \raggedright Finanzdaten dürfen bei der Übertragung nicht mitgelesen werden. Maßnahme: Einsatz starker IPsec-Verschlüsselung (IKEv2) sowie strikte IAM-Rechtevergabe. \tabularnewline \hline
-\raggedright Integrität & \raggedright Hoch & \raggedright Routing-Informationen dürfen nicht manipuliert werden. Maßnahme: Aktivierung der BGP-Authentifizierung und restriktive Allow-Regeln in der GCP Firewall. \tabularnewline \hline
-\raggedright Verfügbarkeit & \raggedright Hoch & \raggedright Ein Netzwerkausfall führt zu Unterbrechungen im Finanzsystem. Maßnahme: redundantes HA-VPN-Setup zur Erfüllung des 99,99\,\%-SLAs. \tabularnewline \hline
-\end{tabular}
+\textbf{Schutzziel} & \textbf{Bedarf} & \textbf{Begründung und Maßnahme} \\ \hline
+Vertraulichkeit & Hoch & Finanzdaten dürfen bei der Übertragung nicht mitgelesen werden. \textbf{Maßnahme:} Einsatz starker IPsec-Verschlüsselung (IKEv2) sowie strikte IAM-Rechtevergabe. \\ \hline
+Integrität & Hoch & Routing-Informationen dürfen nicht manipuliert werden. \textbf{Maßnahme:} Aktivierung der BGP-Authentifizierung und restriktive Allow-Regeln in der GCP Firewall. \\ \hline
+Verfügbarkeit & Hoch & Ein Netzwerkausfall führt zu Unterbrechungen im Finanzsystem. \textbf{Maßnahme:} redundantes HA-VPN-Setup zur Erfüllung des 99,99\,\%-SLAs. \\ \hline
+\end{tabularx}
 \caption{Schutzbedarfsanalyse}
 \end{table}
 
@@ -97,14 +97,27 @@ Während der Projektumsetzung können verschiedene Risiken auftreten. Diese wurd
 
 \begin{table}[!ht]
 \centering
-\begin{tabular}{|p{0.3\textwidth}|p{0.1\textwidth}|p{0.12\textwidth}|p{0.36\textwidth}|}
+\begin{tabularx}{\textwidth}{|X|c|c|X|}
 \hline
-\textbf{Risiko} & \textbf{Eintritt} & \textbf{Auswirkung} & \textbf{Gegenmaßnahme} \tabularnewline \hline
-\raggedright Überschneidung von IP-Adressbereichen (Cloud vs. On-Premises) & \raggedright 2 & \raggedright 3 & \raggedright Vorab einen detaillierten IP-Adressplan erstellen und mit dem Kunden abgleichen. \tabularnewline \hline
-\raggedright Verzögerung durch fehlende IAM-Berechtigungen in der GCP & \raggedright 2 & \raggedright 2 & \raggedright Benötigte Rollen (z.\,B. Network Admin) frühzeitig beim Kunden beantragen und testen. \tabularnewline \hline
-\raggedright Fehlerhafte BGP-Parameter (z.\,B. falsche AS-Nummer) & \raggedright 1 & \raggedright 3 & \raggedright Konfiguration im Vier-Augen-Prinzip prüfen und in isolierter Testumgebung validieren. \tabularnewline \hline
-\end{tabular}
-\caption{Risikoanalyse (Skala: 1=niedrig, 2=mittel, 3=hoch)}
+\textbf{Risiko} & \textbf{Eintritt} & \textbf{Auswirkung} & \textbf{Gegenmaßnahme} \\ \hline
+
+Überschneidung von IP-Adressbereichen (Cloud vs. On-Premises) 
+& \cellcolor{gyellow!40} 2 
+& \cellcolor{gred!30} 3    
+& Vorab einen detaillierten IP-Adressplan erstellen und mit dem Kunden abgleichen. \\ \hline
+
+Verzögerung durch fehlende IAP-Berechtigungen in der GCP 
+& \cellcolor{gyellow!40} 2 
+& \cellcolor{gyellow!40} 2 
+& Benötigte Rollen (z.\,B. Network Admin) frühzeitig beim Kunden beantragen und testen. \\ \hline
+
+Fehlerhafte Variablen und Parameter (z.\,B. falsche AS-Nummer) 
+& \cellcolor{ggreen!30} 1  
+& \cellcolor{gred!30} 3 
+& Konfiguration im Vier Augen Prinzip prüfen und mithilfe von KI validieren. \\ \hline
+
+\end{tabularx}
+\caption{Auszug aus Risikoanalyse}
 \end{table}
 
 \section{Wirtschaftlichkeitsbetrachtung}
@@ -113,28 +126,28 @@ Die bisherige Architektur verursacht durch die manuelle Einrichtung von VPN-Tunn
 \textbf{Kostenübersicht (Einmalkosten):}
 \begin{table}[!ht]
 \centering
-\begin{tabular}{|p{0.6\textwidth}|r|}
+\begin{tabularx}{\textwidth}{|X|r|}
 \hline
 \textbf{Position} & \textbf{Kosten} \\ \hline
 Projektarbeitszeit (40 Stunden $\times$ 70\,€) & 2.800,00\,€ \\ \hline
 Google Cloud Ressourcen (Einrichtung NCC Hub, Router) & 320,00\,€ \\ \hline
 Testumgebung (Temporäre VMs und Traffic) & 180,00\,€ \\ \hline
 \textbf{Gesamte Projektkosten} & \textbf{3.300,00\,€} \\ \hline
-\end{tabular}
+\end{tabularx}
 \caption{Einmalige Projektkosten}
 \end{table}
 
 \textbf{Laufende Betriebskosten (Google Cloud) pro Jahr:}
 \begin{table}[!ht]
 \centering
-\begin{tabular}{|p{0.6\textwidth}|r|}
+\begin{tabularx}{\textwidth}{|X|r|}
 \hline
 \textbf{Position} & \textbf{Kosten} \\ \hline
 NCC Hub \& Spoke-Verbindungen (Grundgebühr) & 1.200,00\,€ \\ \hline
 HA VPN Tunnel (2 Standorte, redundante Tunnel) & 1.400,00\,€ \\ \hline
 Traffic (Egress-Datenverkehr, geschätzt) & 600,00\,€ \\ \hline
 \textbf{Gesamte Betriebskosten (p.\,a.)} & \textbf{3.200,00\,€} \\ \hline
-\end{tabular}
+\end{tabularx}
 \caption{Laufende Cloud-Kosten pro Jahr}
 \end{table}
 
@@ -143,15 +156,15 @@ Durch die Automatisierung des Routings sinkt der monatliche Wartungsaufwand um s
 
 \begin{table}[!ht]
 \centering
-\begin{tabular}{|p{0.6\textwidth}|r|}
+\begin{tabularx}{\textwidth}{|X|r|}
 \hline
 \textbf{Bereich} & \textbf{Einsparung} \\ \hline
 Reduzierter Administrationsaufwand (72 Stunden $\times$ 70\,€) & 5.040,00\,€ \\ \hline
 Vermeidung von Ausfallzeiten durch HA VPN (geschätzt) & 1.200,00\,€ \\ \hline
 \textbf{Gesamte Einsparungen (p.\,a.)} & \textbf{6.240,00\,€} \\ \hline
-\end{tabular}
+\end{tabularx}
 \caption{Erwartete jährliche Einsparungen}
 \end{table}
 
 \textbf{Fazit der Vorabkalkulation:} \\
-Den laufenden Cloud-Kosten von 3.200,00\,€ stehen jährliche Einsparungen in Höhe von 6.240,00\,€ gegenüber. Es ergibt sich ein positiver Nettonutzen von \textbf{3.040,00\,€ pro Jahr}. Die initialen Projektkosten von 3.300,00\,€ amortisieren sich somit bereits nach \textbf{knapp 13 Monaten} (Return on Investment).
+Den laufenden Cloud-Kosten (3.200,00\,€) stehen jährliche Einsparungen von 6.240,00\,€ gegenüber, was einen \textbf{Nettonutzen von 3.040,00\,€ pro Jahr} ergibt. Die einmaligen Projektkosten (3.300,00\,€) amortisieren sich somit nach knapp 13 Monaten. Das bedeutet: Im ersten Jahr werden lediglich die initialen Projektkosten gedeckt, während der echte finanzielle Mehrwert von über 3.000,00\,€ erst ab dem zweiten Betriebsjahr dauerhaft im Unternehmen spürbar wird.

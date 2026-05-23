@@ -10,22 +10,22 @@ Verglichen wurden folgende Optionen:
 \begin{itemize}
     \item \textbf{Option 1 (HA VPN):} Redundante Cloud-VPN-Tunnel über das Internet mit einer garantierten Verfügbarkeit von 99,99\,\%.
     \item \textbf{Option 2 (Partner Interconnect):} Eine direkte und feste Leitung über einen Service-Provider.
-    \item \textbf{Option 3 (Klassisches Mesh):} Die Erweiterung der alten VPN-Struktur ohne zentrale Verwaltung.
+    \item \textbf{Option 3 (Klassisches VPN-Mesh):} Die Erweiterung der alten VPN-Struktur ohne zentrale Verwaltung.
 \end{itemize}
 
 Die Bewertung erfolgt auf einer Skala von 1 (sehr schlecht) bis 5 (sehr gut).
 
 \begin{table}[!ht]
 \centering
-\begin{tabular}{|p{0.3\textwidth}|c|c|c|c|}
+\begin{tabularx}{\textwidth}{|X|c|c|c|c|}
 \hline
-\textbf{Kriterium} & \textbf{Gewichtung} & \textbf{Option 1} & \textbf{Option 2} & \textbf{Option 3} \\ \hline
+\textbf{Kriterium} & \textbf{Gewichtung} & \textbf{HA VPN} & \textbf{Interconnect} & \textbf{VPN-Mesh} \\ \hline
 Ausfallsicherheit (SLA) & 30\,\% & 5 & 4 & 3 \\ \hline
 Skalierbarkeit & 30\,\% & 5 & 4 & 2 \\ \hline
 Kosten (Initial \& Laufend) & 20\,\% & 4 & 2 & 5 \\ \hline
 Administrationsaufwand & 20\,\% & 5 & 3 & 2 \\ \hline
-\textbf{Gesamtnutzen} & \textbf{100\,\%} & \textbf{4,8} & \textbf{3,4} & \textbf{2,9} \\ \hline
-\end{tabular}
+\textbf{Gesamtnutzen} & \textbf{100\,\%} & \cellcolor{ggreen!30}\textbf{4,8} & \cellcolor{gyellow!40}\textbf{3,4} & \cellcolor{gred!30}\textbf{2,9} \\ \hline
+\end{tabularx}
 \caption{Nutzwertanalyse der Anbindungstechnologien}
 \end{table}
 
@@ -40,19 +40,19 @@ Die Architektur besteht aus diesen Teilen:
     \item \textbf{NCC Hub:} Die zentrale Verwaltungsebene für das Hybrid-Netzwerk.
     \item \textbf{VPC Spokes:} Die Cloud-Netzwerke werden als Spokes (Speichen) an den Hub angebunden.
     \item \textbf{VPN Spokes:} Die lokalen On-Premises-Standorte werden über ausfallsichere HA-VPN-Tunnel verbunden.
-    \item \textbf{Cloud Router:} Der dynamische Routenaustausch erfolgt über das BGP (Border Gateway Protocol). \textbf{Wichtig:} Das BGP-Peering und die ASN (Autonomous System Number) werden technisch auf dem Cloud Router konfiguriert, welcher der jeweiligen VPC zugeordnet ist, und nicht auf dem NCC Hub selbst.
+    \item \textbf{Cloud Router:} Der dynamische Routenaustausch erfolgt über das BGP. Das BGP-Peering und die ASN (Autonomous System Number) werden technisch auf dem Cloud Router konfiguriert, welcher der jeweiligen VPC zugeordnet ist, und nicht auf dem NCC Hub selbst.
 \end{itemize}
 
 Durch dieses Design lernt das Netzwerk automatisch alle neuen Routen und verteilt sie an alle angebundenen Standorte. Das manuelle Eintragen von statischen Routen ist nicht mehr nötig. Um Konflikte bei den IP-Adressen zu vermeiden und eine klare Struktur für zukünftiges Wachstum zu schaffen, wurde die folgende Netzwerkplanung vorbereitet:
 
 \begin{table}[!ht]
 \centering
-\begin{tabular}{|p{0.3\textwidth}|p{0.32\textwidth}|p{0.18\textwidth}|c|}
+\begin{tabularx}{\textwidth}{|X|X|l|c|}
 \hline
 \textbf{Komponente (Router)} & \textbf{Rolle im NCC-Design} & \textbf{CIDR-Block} & \textbf{BGP ASN} \\ \hline
 Cloud Router (VPC Europe) & Cloud-Ressourcen & 10.10.0.0/24 & 65001 \\ \hline
-Router Zweigstelle A & On-Premises (VPN Spoke) & 192.168.1.0/24 & 65002 \\ \hline
-\end{tabular}
+Router Branch A & On-Premises (VPN Spoke) & 192.168.1.0/24 & 65002 \\ \hline
+\end{tabularx}
 \caption{Vorbereitete IP- und ASN-Planung für das BGP-Routing}
 \end{table}
 
@@ -66,7 +66,7 @@ Die folgende Tabelle zeigt die logische Abfolge der Schritte (Projektstrukturpla
 
 \begin{table}[!ht]
 \centering
-\begin{tabular}{|p{0.05\textwidth}|p{0.45\textwidth}|p{0.25\textwidth}|p{0.1\textwidth}|}
+\begin{tabularx}{\textwidth}{|c|X|X|c|}
 \hline
 \textbf{Nr.} & \textbf{Deployment-Schritt (Aktion)} & \textbf{Ergebnis} & \textbf{Dauer} \\ \hline
 1 & Erstellen der VPC-Netzwerke und Subnetze & Cloud-Netzwerk steht & 1,0\,h \\ \hline
@@ -78,7 +78,7 @@ Die folgende Tabelle zeigt die logische Abfolge der Schritte (Projektstrukturpla
 7 & Starten von Test-VMs und Verbindungstests & Erfolgreicher Ping-Test & 2,0\,h \\ \hline
 8 & Löschen der temporären Test-VMs (Cleanup) & Kostenvermeidung & 0,5\,h \\ \hline
 \multicolumn{3}{|r|}{\textbf{Gesamtdauer der aktiven Realisierungsphase}} & \textbf{11,5\,h} \\ \hline
-\end{tabular}
+\end{tabularx}
 \caption{Deployment-Reihenfolge und Zeitplanung (Realisierungsphase)}
 \end{table}
 

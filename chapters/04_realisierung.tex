@@ -6,11 +6,11 @@ Die Realisierungsphase wurde primär unter dem Aspekt der Kosten- und Zeitoptimi
 Dieses Vorgehen ermöglichte es, die teuren Cloud-Ressourcen (wie HA-VPN-Gateways, die stundenweise abgerechnet werden) erst im exakten Moment des Tests hochzufahren und nach erfolgreicher Validierung automatisiert wieder abzubauen. 
 
 \section{Vorbereitungsphase (Skripting und Variablen)}
-In dieser Phase wurde das gesamte Deployment in Form von \texttt{gcloud}-Befehlen für das Command Line Interface (CLI) vorgeschrieben. Um Fehler durch Tippfehler (Typos) in einem iterativen Prozess zu vermeiden, wurden alle Bezeichnungen für Netzwerke, Regionen und IP-Adressen als globale Umgebungsvariablen definiert. 
+In dieser Phase wurde das gesamte Deployment in Form von \texttt{gcloud}-Befehlen für das Command Line Interface (CLI) vorgeschrieben. Um Fehler durch Tippfehler in einem iterativen Prozess zu vermeiden, wurden alle Bezeichnungen für Netzwerke, Regionen und IP-Adressen als globale Umgebungsvariablen definiert. 
 
 Auszug der initialen Variablen-Deklaration:
 
-\begin{lstlisting}[language=bash, caption={Definition der Umgebungsvariablen (Auszug)}]
+\begin{lstlisting}[language=bash, caption={Definition der Umgebungsvariablen}]
 # Projekt- und Regionsparameter
 export PROJECT_ID="PROJEKT-ID"
 export REGION="europe-west3"
