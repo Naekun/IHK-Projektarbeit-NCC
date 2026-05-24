@@ -4,7 +4,8 @@ Dieses Dokument beschreibt die reguläre Bereitstellung und den Betrieb einer hy
 
 ## Zweck und Geltungsbereich
 
-Das Handbuch dient als Arbeitsgrundlage für die Bereitstellung, Erweiterung und Kontrolle der Netzwerkarchitektur im Regelbetrieb. Störungen, Syntaxabweichungen und projektspezifische Workarounds sind nicht Bestandteil dieses Dokuments und werden getrennt im Troubleshooting-Handbuch behandelt.
+Das Handbuch dient als Arbeitsgrundlage für die Bereitstellung, Erweiterung und Kontrolle der Netzwerkarchitektur im Regelbetrieb. Störungen, Syntaxabweichungen und projektspezifische Workarounds sind nicht Bestandteil dieses Dokuments und werden getrennt im Troubleshooting-Handbuch behandelt. 
+https://github.com/Naekun/IHK-Projektarbeit-NCC/blob/main/troubleshooting.md
 
 ## Voraussetzungen
 

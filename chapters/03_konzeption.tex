@@ -84,10 +84,25 @@ Die folgende Tabelle zeigt die logische Abfolge der Schritte (Projektstrukturpla
 
 Zur visuellen Darstellung der gesamten Projektdauer (40 Stunden inklusive Planung, Konzeption und Dokumentation) wurde zusätzlich ein Gantt-Diagramm erstellt, das die Abhängigkeiten der einzelnen Phasen übersichtlich darstellt.
 
-\begin{figure}[!ht]
+\begin{table}[!ht]
 \centering
-\rule{0.9\textwidth}{4.5cm} % Platzhalter für Gantt-Diagramm
-\caption{Gantt-Diagramm der gesamten zeitlichen Projektplanung (Platzhalter)}
-\end{figure}
+\renewcommand{\arraystretch}{1.5}
+\setlength{\arrayrulewidth}{0.3pt}
+
+\begin{tabularx}{\textwidth}{|l| *{5}{>{\centering\arraybackslash}X|}}
+\hline
+\rowcolor{gray!10}
+\textbf{Projektphase} & \textbf{18.05.} & \textbf{19.05.} & \textbf{20.05.} & \textbf{21.05.} & \textbf{22.05.} \\ \hline
+1. Planung & \cellcolor{gblue!30} 8h & & & & \\ \hline
+2. Vorbereitung & & \cellcolor{gred!30} 6h & & & \\ \hline
+3. Durchführung & & & \cellcolor{gyellow!40} 8h & \cellcolor{gyellow!40} 4h & \\ \hline
+4. Test \& QA & & & & \cellcolor{ggreen!30} 5h & \\ \hline
+5. Übergabe & & & & & \cellcolor{gblue!30} 3h \\ \hline
+6. Dokumentation & \cellcolor{gred!30} 1h & \cellcolor{gred!30} 1h & \cellcolor{gred!30} 1h & & \cellcolor{gred!30} 3h \\ \hline
+\hline
+\textbf{Stunden pro Tag} & \textbf{9h} & \textbf{7h} & \textbf{9h} & \textbf{9h} & \textbf{6h} \\ \hline
+\end{tabularx}
+\caption{Gantt-Diagramm als tabellarische Projektplanung (40 Stunden)}
+\end{table}
 
 Diese genaue Planung stellt sicher, dass die anschließende praktische Umsetzung effizient, schnell und kostensparend durchgeführt werden kann.
