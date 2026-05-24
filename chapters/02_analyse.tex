@@ -2,30 +2,30 @@
 \chapter{Analysephase}
 
 \section{Ist-Zustand}
-Die Söldner Consult GmbH ist ein IT-Dienstleistungsunternehmen mit Schwerpunkt auf Cloud-Architekturen, Netzwerkdesign und Infrastrukturmodernisierung. Der Kunde ist ein mittelständisches Unternehmen mit Hauptstandort in Nürnberg sowie zwei Außenstellen.
+Der Hauptstandort des Kunden in Nürnberg sowie dessen zwei Außenstellen sind aktuell über eine historisch gewachsene Infrastruktur vernetzt. 
 
-Die bestehende Infrastruktur umfasst:
+Die bestehende IT-Umgebung umfasst:
 \begin{itemize}
     \item Ein lokales Rechenzentrum
     \item Mehrere manuell konfigurierte VPN-Anbindungen
     \item Cloud-Ressourcen innerhalb der Google Cloud Platform (GCP)
 \end{itemize}
 
-Die aktuelle Netzwerkstruktur basiert auf mehreren separaten Site-to-Site-VPN-Verbindungen. Das Unternehmen plant eine schrittweise Migration weiterer Dienste in die Cloud, jedoch erfüllt die bestehende Netzwerkarchitektur die Anforderungen an Skalierbarkeit und zentrale Verwaltung nicht mehr.
+Die aktuelle Netzwerkstruktur basiert auf mehreren separaten Site-to-Site-VPN-Verbindungen. Obwohl das Unternehmen plant, schrittweise weitere Dienste in die Cloud zu migrieren, erfüllt die bestehende Netzwerkarchitektur die wachsenden Anforderungen an Skalierbarkeit und zentrale Verwaltung nicht mehr.
 
 \section{Problemanalyse}
-Mit zunehmender Anzahl angebundener Standorte steigt die Komplexität der bestehenden VPN-Mesh-Struktur erheblich. Die aktuelle Architektur verursacht folgende Probleme:
+Mit der zunehmenden Anzahl angebundener Standorte steigt die Komplexität der bestehenden VPN-Mesh-Struktur erheblich. Die aktuelle Architektur verursacht in der Praxis folgende Probleme:
 \begin{itemize}
-    \item Manuelle Pflege statischer Routen bei jedem neuen Subnetz
+    \item Manuelle Pflege statischer Routen bei der Integration jedes neuen Subnetzes
     \item Fehlende zentrale Verwaltungsebene für das Routing
     \item Hohe Komplexität und Fehleranfälligkeit bei Netzwerkerweiterungen
     \item Eingeschränkte Transparenz und inkonsistente Sicherheitsrichtlinien
 \end{itemize}
 
-Zusätzlich existieren keine zentralen Monitoring-Mechanismen zur Überwachung der hybriden Netzwerkverbindungen. Dies verursacht einen erhöhten administrativen Aufwand im Tagesgeschäft.
+Darüber hinaus fehlen zentrale Monitoring-Mechanismen zur Überwachung der hybriden Netzwerkverbindungen. Dies führt zu einem signifikant erhöhten administrativen Aufwand im IT-Tagesgeschäft.
 
 \section{Soll-Zustand und Projektziel}
-Ziel des Projekts ist die Konzeption und Implementierung einer zentralen, hybriden Netzwerkarchitektur innerhalb der Google Cloud. Die neue Infrastruktur soll hochverfügbar, skalierbar und standardisiert sein. Die manuelle Routenpflege soll durch ein dynamisches Routing-Protokoll abgelöst werden.
+Das primäre Projektziel besteht in der Konzeption und Implementierung einer zentralen, hybriden Netzwerkarchitektur innerhalb der Google Cloud. Die neue Infrastruktur soll hochverfügbar, skalierbar und standardisiert sein. Dabei ist vorgesehen, die manuelle Routenpflege vollständig durch ein dynamisches Routing-Protokoll abzulösen.
 
 \section{Anforderungsanalyse}
 
@@ -42,11 +42,11 @@ Ziel des Projekts ist die Konzeption und Implementierung einer zentralen, hybrid
 \begin{itemize}
     \item Hohe Skalierbarkeit für zukünftige Standortanbindungen
     \item Einfache Wartbarkeit und geringe Administrationskomplexität
-    \item Hohe Ausfallsicherheit (SLA 99,99\,\%)
+    \item Hohe Ausfallsicherheit (SLA von 99,99\,\%)
 \end{itemize}
 
 \subsection{Lasten- und Pflichtenheft}
-Die abgeleiteten Anforderungen werden im folgenden Auszug von Lasten- und Pflichtenheft zusammengefasst.
+Die abgeleiteten Anforderungen werden im folgenden Auszug des Lasten- und Pflichtenhefts zusammengefasst.
 
 \begin{table}[!ht]
 \centering
@@ -58,11 +58,11 @@ Verfügbarkeit & Ausfallsichere Anbindung & Einsatz von HA Cloud VPN \\ \hline
 Routing & Automatischer Routenaustausch & Cloud Router mit BGP \\ \hline
 Sicherheit & Zentraler Schutz & GCP Firewall-Regeln (Default Deny) \\ \hline
 \end{tabularx}
-\caption{Auszug aus Lasten- und Pflichtenheft}
+\caption{Auszug aus dem Lasten- und Pflichtenheft}
 \end{table}
 
 \section{Stakeholder-Analyse}
-Für einen reibungslosen Projektablauf müssen die Interessen aller beteiligten Personengruppen berücksichtigt werden.
+Für einen reibungslosen Projektablauf müssen die Interessen aller beteiligten Personengruppen angemessen berücksichtigt werden.
 
 \begin{table}[!ht]
 \centering
@@ -78,7 +78,7 @@ Netzwerk-Admins & Anwender & Mittel & Geringer Wartungsaufwand \\ \hline
 \end{table}
 
 \section{Schutzbedarfsanalyse nach BSI und DSGVO}
-Da der Kunde im Finanzsektor tätig ist, unterliegen die übertragenen Daten strengen Datenschutzvorgaben (DSGVO). Die Bewertung orientiert sich an den IT-Grundschutz-Standards des BSI.
+Da der Kunde im Finanzsektor tätig ist, unterliegen sämtliche übertragenen Daten strengen Datenschutzvorgaben (DSGVO). Die Bewertung orientiert sich an den IT-Grundschutz-Standards des BSI.
 
 \begin{table}[!ht]
 \centering
@@ -87,13 +87,13 @@ Da der Kunde im Finanzsektor tätig ist, unterliegen die übertragenen Daten str
 \textbf{Schutzziel} & \textbf{Bedarf} & \textbf{Begründung und Maßnahme} \\ \hline
 Vertraulichkeit & Hoch & Finanzdaten dürfen bei der Übertragung nicht mitgelesen werden. \textbf{Maßnahme:} Einsatz starker IPsec-Verschlüsselung (IKEv2) sowie strikte IAM-Rechtevergabe. \\ \hline
 Integrität & Hoch & Routing-Informationen dürfen nicht manipuliert werden. \textbf{Maßnahme:} Aktivierung der BGP-Authentifizierung und restriktive Allow-Regeln in der GCP Firewall. \\ \hline
-Verfügbarkeit & Hoch & Ein Netzwerkausfall führt zu Unterbrechungen im Finanzsystem. \textbf{Maßnahme:} redundantes HA-VPN-Setup zur Erfüllung des 99,99\,\%-SLAs. \\ \hline
+Verfügbarkeit & Hoch & Ein Netzwerkausfall führt zu Unterbrechungen im Finanzsystem. \textbf{Maßnahme:} Redundantes HA-VPN-Setup zur Erfüllung des 99,99\,\%-SLAs. \\ \hline
 \end{tabularx}
-\caption{Schutzbedarfsanalyse}
+\caption{Schutzbedarfsanalyse nach BSI}
 \end{table}
 
 \section{Risikoanalyse}
-Während der Projektumsetzung können verschiedene Risiken auftreten. Diese wurden bewertet, um frühzeitig Gegenmaßnahmen zu ergreifen. Die Bewertung erfolgt auf einer Skala von 1 (niedrig) bis 3 (hoch).
+Während der Projektumsetzung können verschiedene Risiken auftreten. Diese wurden im Vorfeld bewertet, um frühzeitig entsprechende Gegenmaßnahmen ergreifen zu können. Die Bewertung erfolgt auf einer Skala von 1 (niedrig) bis 3 (hoch).
 
 \begin{table}[!ht]
 \centering
@@ -114,14 +114,14 @@ Verzögerung durch fehlende IAP-Berechtigungen in der GCP
 Fehlerhafte Variablen und Parameter (z.\,B. falsche AS-Nummer) 
 & \cellcolor{ggreen!30} 1  
 & \cellcolor{gred!30} 3 
-& Konfiguration im Vier Augen Prinzip prüfen und mithilfe von KI validieren. \\ \hline
+& Konfiguration im Vorfeld prüfen und mithilfe von KI validieren. \\ \hline
 
 \end{tabularx}
-\caption{Auszug aus Risikoanalyse}
+\caption{Auszug aus der Risikoanalyse}
 \end{table}
 
 \section{Wirtschaftlichkeitsbetrachtung}
-Die bisherige Architektur verursacht durch die manuelle Einrichtung von VPN-Tunneln und statischen Routen einen hohen administrativen Aufwand. Die neue Architektur reduziert Fehlerquellen und verkürzt die Bereitstellungszeiten für neue Standorte erheblich. Die internen Personalkosten basieren auf einem marktüblichen Stundensatz für Systemadministratoren in Höhe von 70\,€.
+Die bisherige Architektur verursacht durch die manuelle Einrichtung von VPN-Tunneln und statischen Routen einen hohen administrativen Aufwand. Die neue Architektur reduziert Fehlerquellen signifikant und verkürzt die Bereitstellungszeiten für neue Standorte erheblich. Die internen Personalkosten basieren auf einem marktüblichen Stundensatz für Systemadministratoren in Höhe von 70\,€.
 
 \textbf{Kostenübersicht (Einmalkosten):}
 \begin{table}[!ht]

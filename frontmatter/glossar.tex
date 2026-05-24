@@ -3,7 +3,25 @@
 \addcontentsline{toc}{chapter}{Glossar}
 
 \begin{description}
-    \item[\textbf{Landing Zone}] Eine vorab konfigurierte, sichere Umgebung in der Cloud, die als Grundlage für den Betrieb von Workloads dient.
-    \item[\textbf{Spokes}] Netzwerkverbindungen (zum Beispiel VPCs oder VPN-Tunnel), die an einen zentralen Hub angebunden werden.
-    \item[\textbf{Site-to-Site VPN}] Eine sichere Netzwerkverbindung zwischen zwei entfernten Netzwerken über das Internet.
+    % --- Architektur & Fundament ---
+    \item[\textbf{Landing Zone}] Eine vorab konfigurierte, sichere Umgebung in der Cloud, die als standardisierte Grundlage für den Betrieb von Unternehmens-Workloads dient.
+    
+    \item[\textbf{Site-to-Site VPN}] Eine verschlüsselte und sichere Netzwerkverbindung zwischen zwei entfernten lokalen Netzwerken (oder einem lokalen Netz und einer Cloud) über das öffentliche Internet.
+    
+    \item[\textbf{Hub-and-Spoke-Topologie}] Eine sternförmige Netzwerkarchitektur. Ein zentraler Knotenpunkt (Hub) verwaltet und steuert den gesamten Datenverkehr zwischen den angebundenen Endpunkten (Spokes).
+    
+    \item[\textbf{Spoke (Speiche)}] Eine einzelne Netzwerkverbindung (zum Beispiel eine VPC oder ein IPsec-Tunnel), die an einen zentralen Hub angebunden wird.
+    
+    % --- Sicherheit & Deployment ---
+    \item[\textbf{Default-Deny-Prinzip}] Ein fundamentales IT-Sicherheitskonzept, bei dem standardmäßig jeglicher Netzwerkverkehr blockiert wird. Ausschließlich explizit definierte Verbindungen (Allow-Regeln) werden von der Firewall zugelassen.
+    
+    \item[\textbf{Infrastructure as Code (IaC)}] Die Verwaltung und Bereitstellung von IT-Infrastruktur durch maschinenlesbare Skripte und Variablenkonfigurationen anstelle von manuellen Klicks in grafischen Benutzeroberflächen.
+    
+    % --- Technische Implementierung ---
+    \item[\textbf{APIPA (Automatic Private IP Addressing)}] Ein für die lokale Netzwerkkommunikation reservierter Adressbereich (\texttt{169.254.0.0/16}). Wird in diesem Projekt für den Aufbau der BGP-Sitzungen innerhalb der VPN-Tunnel genutzt.
+    
+    % --- Test & QA ---
+    \item[\textbf{Identity-Aware Proxy (IAP)}] Ein Sicherheitsdienst der Google Cloud, der den administrativen Fernzugriff (z.\,B. SSH) auf virtuelle Maschinen ermöglicht, ohne dass diese über öffentliche IP-Adressen verfügen müssen.
+    
+    \item[\textbf{Konvergenzzeit}] Die Dauer, die ein dynamisches Routing-Protokoll (wie BGP) benötigt, um nach einem Netzwerkausfall (Failover) die Routing-Tabellen zu aktualisieren und den Traffic umzuleiten.
 \end{description}

@@ -6,8 +6,25 @@
 \textbf{BGP}  & Border Gateway Protocol \\
 \textbf{GCP}  & Google Cloud Platform \\
 \textbf{HA}   & High Availability (Hochverfügbarkeit) \\
+\textbf{IAM}  & Identity and Access Management \\
+\textbf{IAP}  & Identity-Aware Proxy \\
 \textbf{NCC}  & Network Connectivity Center \\
 \textbf{VM}   & Virtuelle Maschine \\
 \textbf{VPC}  & Virtual Private Cloud \\
 \textbf{VPN}  & Virtual Private Network \\
 \end{longtable}
+
+\vspace{1cm}
+\noindent\textbf{Namenskonventionen für das Scripting (Variablen)} \\
+Zur Automatisierung des Deployments wurden spezifische Namenskonventionen und Präfixe für die Cloud-Ressourcen definiert. Die verwendeten Kürzel sind im folgenden Block aufgeschlüsselt:
+
+\begin{lstlisting}[language=bash, caption={Ressourcen-Kürzel und Namenskonventionen}]
+# --- Definition der Ressourcen ---
+# ASN  : Autonomous System Number
+# BR   : Branch (Lokale Zweigstelle / On-Premises)
+# CIDR : Classless Inter-Domain Routing (IP-Adressbereich)
+# CR   : Cloud Router
+# EU   : Europe (Bezeichnet die GCP-Region europe-west3)
+# GW   : Gateway (HA-VPN)
+# TUN  : Tunnel (IPsec)
+\end{lstlisting}

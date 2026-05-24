@@ -1,3 +1,4 @@
+\UseRawInputEncoding
 % ---------- Datei: main.tex ----------
 % Hauptdatei der Projektdokumentation
 \documentclass[12pt,a4paper,ngerman]{scrreprt}
@@ -112,16 +113,11 @@
 \input{chapters/06_uebergabe}
 \input{chapters/07_projektabschluss}
 
-% --- Quellen und GitHub Repository ---
+% --- Quellen und GitHub-Repository ---
 \clearpage
-\chapter{Quellen und GitHub-Repository}
+\renewcommand{\bibname}{Quellen und GitHub-Repository}
 
-
-\vfill
-\begin{flushright}
-    \includegraphics[width=0.28\textwidth]{images/QR_Code_IHKProjektarbeitNCC_GitHub.png} \\[0.2cm]
-    \small\textit{QR-Code zum GitHub-Repository}
-\end{flushright}
+\input{bibliography/quellen} 
 
 % --- Anhang ---
 \appendix

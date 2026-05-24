@@ -3,10 +3,10 @@
 
 Die Realisierungsphase wurde primär unter dem Aspekt der Kosten- und Zeitoptimierung durchgeführt. Anstatt die Netzwerkinfrastruktur zeitaufwendig und fehleranfällig über die grafische Benutzeroberfläche (GCP Console) zusammenzuklicken, wurde die gesamte Bereitstellung in zwei Phasen unterteilt: die Vorbereitungsphase und die Ausführungsphase.
 
-Dieses Vorgehen ermöglichte es, die teuren Cloud-Ressourcen (wie HA-VPN-Gateways, die stundenweise abgerechnet werden) erst im exakten Moment des Tests hochzufahren und nach erfolgreicher Validierung automatisiert wieder abzubauen. 
+Dieses Vorgehen hat es ermöglicht, die kostenintensiven Cloud-Ressourcen (wie HA-VPN-Gateways, die stundenweise abgerechnet werden) erst im exakten Moment des Tests hochzufahren und nach erfolgreicher Validierung automatisiert wieder abzubauen. 
 
 \section{Vorbereitungsphase (Skripting und Variablen)}
-In dieser Phase wurde das gesamte Deployment in Form von \texttt{gcloud}-Befehlen für das Command Line Interface (CLI) vorgeschrieben. Um Fehler durch Tippfehler in einem iterativen Prozess zu vermeiden, wurden alle Bezeichnungen für Netzwerke, Regionen und IP-Adressen als globale Umgebungsvariablen definiert. 
+In dieser Phase wurde das gesamte Deployment in Form von \texttt{gcloud}-Befehlen für das Command Line Interface (CLI) vorbereitet. Um Fehler durch manuelle Eingaben in einem iterativen Prozess zu vermeiden, wurden sämtliche Bezeichnungen für Netzwerke, Regionen und IP-Adressen als globale Umgebungsvariablen definiert. 
 
 Auszug der initialen Variablen-Deklaration:
 
@@ -47,10 +47,10 @@ export BR_BGP_1_IP="169.254.2.2"
 \end{lstlisting}
 
 \section{Ausführungsphase (One-Pass Deployment)}
-Nach Abschluss der Skripterstellung konnte die gesamte Zielarchitektur in einem einzigen Durchgang (One-Pass) fehlerfrei in der Cloud hochgefahren werden. Die Ausführung erfolgte in der vorkonzipierten Reihenfolge.
+Nach Abschluss der Skripterstellung lässt sich die gesamte Zielarchitektur in einem einzigen Durchgang (One-Pass) fehlerfrei in der Cloud hochfahren. Die Ausführung erfolgt dabei in der vorkonzipierten Reihenfolge.
 
 \subsection{VPCs, Subnetze und Firewall}
-Im ersten Schritt wurden die Basisnetzwerke im Custom-Subnet-Modus erstellt. Die Google Cloud Firewall wurde nach dem \textit{Default-Deny}-Prinzip konfiguriert, sodass nur explizit erlaubter interner Traffic (SSH und ICMP für Ping-Tests) zugelassen wird.
+Im ersten Schritt wurden die Basisnetzwerke im Custom-Subnet-Modus erstellt. Die Google Cloud Firewall wurde nach dem \textit{Default-Deny}-Prinzip konfiguriert, sodass ausschließlich explizit erlaubter interner Traffic (SSH und ICMP für Ping-Tests) zugelassen wird.
 
 \begin{lstlisting}[language=bash, caption={Erstellung der Basisnetzwerke und Firewall-Regeln}]
 # Basis-VPCs anlegen
@@ -76,7 +76,7 @@ gcloud compute firewall-rules create "fw-allow-internal-branch" \
 \end{lstlisting}
 
 \subsection{HA-VPN und BGP-Routing}
-Anschließend wurden die Cloud Router für das dynamische BGP-Routing sowie die redundanten HA-VPN-Gateways hochgefahren. Der Aufbau der IPsec-Tunnel erfolgte unter der Nutzung eines sicheren \textit{Shared Secrets}. Die BGP-Sitzungen wurden über standardisierte APIPA-Adressen (169.254.x.x) konfiguriert.
+Anschließend wurden die Cloud Router für das dynamische BGP-Routing sowie die redundanten HA-VPN-Gateways bereitgestellt. Der Aufbau der IPsec-Tunnel wurde unter der Nutzung eines sicheren \textit{Shared Secrets} durchgeführt. Die BGP-Sitzungen wurden über standardisierte APIPA-Adressen (169.254.x.x) konfiguriert.
 
 \begin{lstlisting}[language=bash, caption={Konfiguration der HA-VPN-Gateways und BGP-Sitzungen}]
 # 1. Cloud Router und HA-VPN-Gateway anlegen
@@ -116,7 +116,7 @@ gcloud compute routers add-bgp-peer "${CLOUD_ROUTER}" \
 \end{lstlisting}
 
 \subsection{Network Connectivity Center (NCC)}
-Den Kern der Hub-and-Spoke-Architektur bildet das Network Connectivity Center. Der Hub wurde als zentrale Verwaltungsinstanz angelegt. Danach wurden die zuvor erstellten VPN-Tunnel als \textit{Spokes} an den Hub angebunden, um den nahtlosen Datentransfer zwischen den Netzwerken zu aktivieren.
+Den Kern der Hub-and-Spoke-Architektur bildet das Network Connectivity Center. Der Hub wurde als zentrale Verwaltungsinstanz angelegt. Im Anschluss wurden die zuvor erstellten VPN-Tunnel als \textit{Spokes} an den Hub angebunden, um den nahtlosen Datentransfer zwischen den Netzwerken zu aktivieren.
 
 \begin{lstlisting}[language=bash, caption={Bereitstellung des NCC Hubs und der Spokes}]
 # Zentralen Hub erstellen
@@ -131,6 +131,6 @@ gcloud network-connectivity spokes create "spoke-branch-a" \
   --site-to-site-data-transfer
 \end{lstlisting}
 
-Durch dieses vorstrukturierte \textit{Infrastructure-as-Code}-ähnliche Vorgehen dauerte die aktive Bereitstellung der gesamten komplexen Netzwerkarchitektur weniger als 30 Minuten, was das Projektbudget extrem schonte. 
+Durch dieses vorstrukturierte, \textit{Infrastructure-as-Code}-ähnliche Vorgehen dauert die aktive Bereitstellung der gesamten komplexen Netzwerkarchitektur weniger als 30 Minuten, was zu einer signifikanten Einsparung im Projektbudget führt. 
 
-Die anschließende Bereitstellung von Test-VMs und das automatisierte Cleanup der Umgebung (Teardown) werden im folgenden Kapitel zur Test- und Qualitätssicherung behandelt.
+Die anschließende Bereitstellung von Test-VMs und das automatisierte Cleanup der Umgebung werden im folgenden Kapitel zur Test- und Qualitätssicherung behandelt.

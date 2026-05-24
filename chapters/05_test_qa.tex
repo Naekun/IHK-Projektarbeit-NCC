@@ -2,15 +2,15 @@
 \chapter{Test- und Qualitätssicherung}
 
 \section{Testkonzept}
-Die Tests prüfen nur die im Projekt nachgewiesenen Funktionen: Erreichbarkeit, Routing und Failover. Für die Testphase wurden temporär öffentliche IP-Adressen und eine SSH-Regel verwendet, da der Zugriff über IAP im Ausbildungsprojekt nicht vollständig verfügbar war. Der eigentliche Testverkehr lief über die internen IPs \texttt{10.10.x.x} und \texttt{192.168.x.x}.
+Die Testphase fokussiert sich auf die zentralen Projektziele: Erreichbarkeit, Routing und Failover. Für die Tests wurden temporär öffentliche IP-Adressen und eine SSH-Regel konfiguriert, da der Zugriff über IAP (Identity-Aware Proxy) im isolierten Ausbildungsprojekt nicht vollständig zur Verfügung stand. Der eigentliche Testverkehr wurde dabei strikt über die internen IP-Adressen \texttt{10.10.x.x} und \texttt{192.168.x.x} geroutet.
 
 \section{Durchführung}
 Die Tests wurden direkt nach dem Deployment durchgeführt. Der Ping-Test war erfolgreich. Die Verbindung zwischen den Test-VMs war stabil und ohne Paketverlust.
 
-Der Traceroute-Test wurde mit ICMP ausgeführt, damit der Pfad über das VPN sichtbar wurde. Auf den Screenshots ist zu sehen, dass der Datenverkehr über die interne VPN-Verbindung läuft.
+Der Traceroute-Test wurde explizit mit ICMP ausgeführt, um den exakten Routing-Pfad über das VPN abzubilden (da Standard-UDP-Traffic von der Firewall blockiert wird). Die Ausgaben belegen, dass der Datenverkehr korrekt über die interne VPN-Verbindung geleitet wird.
 
 \subsection{Routing}
-Die BGP-Routen wurden im Cloud Router geprüft. Auf dem Screenshot ist zu sehen, dass die Routen korrekt gelernt wurden und die beiden Tunnel als aktiv angezeigt werden.
+Die Überprüfung der BGP-Routen erfolgte direkt im Cloud Router. Die Systemausgabe zeigt, dass die Präfixe korrekt gelernt wurden und beide Tunnel als aktiv angezeigt werden.
 
 \begin{figure}[!ht]
 \centering
@@ -19,7 +19,7 @@ Die BGP-Routen wurden im Cloud Router geprüft. Auf dem Screenshot ist zu sehen,
 \end{figure}
 
 \subsection{Firewall}
-Die Firewall-Regeln wurden so gesetzt, dass nur notwendiger Testverkehr erlaubt war. Damit wurde das Default-Deny-Prinzip bestätigt.
+Die Firewall-Regeln wurden restriktiv konfiguriert, sodass nur der notwendige Testverkehr zugelassen war. Dies bestätigt die erfolgreiche Umsetzung des \textit{Default-Deny}-Prinzips.
 
 \begin{figure}[!ht]
 \centering
@@ -28,7 +28,7 @@ Die Firewall-Regeln wurden so gesetzt, dass nur notwendiger Testverkehr erlaubt 
 \end{figure}
 
 \subsection{Failover}
-Für den Failover-Test wurde die BGP-Sitzung von \textit{Tunnel 0} entfernt. Nach kurzer Zeit lief der Verkehr automatisch über \textit{Tunnel 1} weiter. Damit wurde die Redundanz der Verbindung nachgewiesen.
+Für den Failover-Test wurde die BGP-Sitzung von \textit{Tunnel 0} administrativ entfernt. Nach einer kurzen Konvergenzzeit lief der Datenverkehr automatisch über den redundanten \textit{Tunnel 1} weiter. Damit wurde die Redundanz der Verbindung erfolgreich nachgewiesen.
 
 \begin{figure}[!ht]
 \centering
@@ -38,4 +38,4 @@ Für den Failover-Test wurde die BGP-Sitzung von \textit{Tunnel 0} entfernt. Nac
 
 
 \section{Ergebnis}
-Alle Testfälle waren erfolgreich. Die Verbindung zwischen Cloud und On-Premises war stabil, das Routing funktionierte dynamisch und das Failover auf den zweiten Tunnel wurde korrekt ausgeführt.
+Alle definierten Testfälle waren erfolgreich. Die Verbindung zwischen der Cloud und der On-Premises-Umgebung war stabil, das dynamische BGP-Routing funktionierte reibungslos und der automatische Failover auf den redundanten Tunnel wurde korrekt ausgeführt.

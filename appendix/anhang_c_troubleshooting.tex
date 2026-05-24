@@ -6,7 +6,7 @@ Während der Implementierung und Testphase der hybriden Netzwerkarchitektur trat
 Der Leitfaden dokumentiert ausschließlich reale Szenarien aus der Projektdurchführung. Dazu gehören im Detail:
 
 \begin{itemize}
-    \item \textbf{IAP-Zugriff nicht möglich:} Temporärer Workaround für noch fehlende IAM-Rolen durch Zuweisung externer IP-Adressen für den eng begrenzten Testzeitraum.
+    \item \textbf{IAP-Zugriff nicht möglich:} Temporärer Workaround für noch fehlende IAM-Rollen durch Zuweisung externer IP-Adressen für den eng begrenzten Testzeitraum.
     \item \textbf{Traceroute-Fehlschlag:} Anpassung der Test-Parameter auf ICMP (statt UDP), da der reguläre UDP-Traffic durch die strikten Firewall-Regeln blockiert wurde.
     \item \textbf{Veraltete NCC-Syntax:} Lösung von CLI-Fehlern durch die Verwendung des aktualisierten \texttt{gcloud}-Befehls (\texttt{linked-vpn-tunnels create}) zur Spoke-Anbindung.
     \item \textbf{Manueller Failover-Test:} Gezieltes Entfernen eines BGP-Peers zur künstlichen Herbeiführung eines Ausfalls und Überprüfung der automatischen Umschaltung.
@@ -20,7 +20,7 @@ Das vollständige Troubleshooting-Dokument ist im GitHub-Repository verfügbar:
 \vspace{0.3cm}
 \noindent\url{https://github.com/Naekun/IHK-Projektarbeit-NCC/blob/main/troubleshooting.md}
 
-\vspace{0.5cm}
+\vfill
 \begin{flushright}
     \includegraphics[width=0.28\textwidth]{images/QR_Code_Troubleshooting.png} \\[0.2cm]
     \small\textit{QR-Code zum Troubleshooting-Leitfaden}

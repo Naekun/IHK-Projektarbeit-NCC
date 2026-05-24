@@ -1,16 +1,16 @@
 % ---------- Datei: chapters/03_konzeption.tex ----------
 \chapter{Konzeptionsphase}
 
-Die Konzeptionsphase ist der wichtigste Teil dieses Projekts. Das Ziel ist es, die aktiven Laufzeiten der Cloud-Ressourcen und damit die laufenden Kosten für den Kunden so gering wie möglich zu halten. Deshalb wurden alle Parameter wie IP-Adressen, ASN-Nummern und Firewall-Regeln im Voraus genau geplant. Diese detaillierte Vorbereitung ermöglicht es, die praktische Umsetzung in der Google Cloud schnell, fehlerfrei und in nur wenigen Stunden durchzuführen.
+Die Konzeptionsphase ist die Basis dieses Projekts. Das Ziel ist, die aktiven Laufzeiten der Cloud-Ressourcen und damit die laufenden Kosten für den Kunden so gering wie möglich zu halten. Deshalb wurden alle Parameter wie IP-Adressen, ASN-Nummern und Firewall-Regeln im Voraus genau geplant. Diese detaillierte Vorbereitung ermöglicht es, die praktische Umsetzung in der Google Cloud schnell, fehlerfrei und in nur wenigen Stunden durchzuführen.
 
 \section{Technologieauswahl und Nutzwertanalyse}
-Um die lokalen Standorte mit der Cloud zu verbinden, wurden verschiedene Technologien verglichen. Die Entscheidung basiert auf einer Nutzwertanalyse, bei der Kosten und Verfügbarkeit die wichtigste Rolle spielten.
+Um die lokalen Standorte mit der Cloud zu verbinden, wurden verschiedene Technologien verglichen. Die Entscheidung basiert auf einer Nutzwertanalyse, bei der Kosten und Verfügbarkeit die wichtigste Rolle spielen.
 
 Verglichen wurden folgende Optionen:
 \begin{itemize}
-    \item \textbf{Option 1 (HA VPN):} Redundante Cloud-VPN-Tunnel über das Internet mit einer garantierten Verfügbarkeit von 99,99\,\%.
+    \item \textbf{Option 1 (HA Cloud VPN mit NCC):} Redundante Cloud-VPN-Tunnel über das Internet mit einer garantierten Verfügbarkeit von 99,99\,\% (SLA).
     \item \textbf{Option 2 (Partner Interconnect):} Eine direkte und feste Leitung über einen Service-Provider.
-    \item \textbf{Option 3 (Klassisches VPN-Mesh):} Die Erweiterung der alten VPN-Struktur ohne zentrale Verwaltung.
+    \item \textbf{Option 3 (Klassisches VPN-Mesh):} Die Erweiterung der alten VPN-Struktur ohne eine zentrale Verwaltungsebene.
 \end{itemize}
 
 Die Bewertung erfolgt auf einer Skala von 1 (sehr schlecht) bis 5 (sehr gut).
@@ -29,13 +29,13 @@ Administrationsaufwand & 20\,\% & 5 & 3 & 2 \\ \hline
 \caption{Nutzwertanalyse der Anbindungstechnologien}
 \end{table}
 
-\textbf{Entscheidung:} Option 1 (HA Cloud VPN mit NCC) erreicht das beste Ergebnis. Option 2 (Partner Interconnect) ist für die aktuellen Anforderungen des Kunden zu teuer und dauert in der Bereitstellung durch den Provider zu lange. Option 1 bietet die geforderte Ausfallsicherheit und ermöglicht eine schnelle und flexible Umsetzung des Projekts.
+\textbf{Entscheidung:} Option 1 (\textbf{HA Cloud VPN mit NCC}) erreicht das beste Ergebnis. Option 2 (Partner Interconnect) ist für die aktuellen Anforderungen des Kunden zu teuer und dauert in der Bereitstellung durch den Provider zu lange. Option 1 bietet die geforderte Ausfallsicherheit und ermöglicht eine schnelle und flexible Umsetzung des Projekts.
 
 \section{Netzwerkdesign und NCC-Architektur}
 
 Das neue Netzwerk wird als Hub-and-Spoke-Modell aufgebaut. Das Network Connectivity Center (NCC) dient dabei als zentrale Verwaltungsebene in der Google Cloud. 
 
-Die Architektur besteht aus diesen Teilen:
+Die Architektur besteht aus folgenden Komponenten:
 \begin{itemize}
     \item \textbf{NCC Hub:} Die zentrale Verwaltungsebene für das Hybrid-Netzwerk.
     \item \textbf{VPC Spokes:} Die Cloud-Netzwerke werden als Spokes (Speichen) an den Hub angebunden.
@@ -43,7 +43,7 @@ Die Architektur besteht aus diesen Teilen:
     \item \textbf{Cloud Router:} Der dynamische Routenaustausch erfolgt über das BGP. Das BGP-Peering und die ASN (Autonomous System Number) werden technisch auf dem Cloud Router konfiguriert, welcher der jeweiligen VPC zugeordnet ist, und nicht auf dem NCC Hub selbst.
 \end{itemize}
 
-Durch dieses Design lernt das Netzwerk automatisch alle neuen Routen und verteilt sie an alle angebundenen Standorte. Das manuelle Eintragen von statischen Routen ist nicht mehr nötig. Um Konflikte bei den IP-Adressen zu vermeiden und eine klare Struktur für zukünftiges Wachstum zu schaffen, wurde die folgende Netzwerkplanung vorbereitet:
+Durch dieses Design lernt das Netzwerk automatisch alle neuen Routen und verteilt sie an alle angebundenen Standorte. Die manuelle Pflege statischer Routen ist somit nicht mehr nötig. Um Konflikte bei den IP-Adressen zu vermeiden und eine klare Struktur für zukünftiges Wachstum zu schaffen, wurde die folgende Netzwerkplanung vorbereitet:
 
 \begin{table}[!ht]
 \centering
@@ -90,4 +90,4 @@ Zur visuellen Darstellung der gesamten Projektdauer (40 Stunden inklusive Planun
 \caption{Gantt-Diagramm der gesamten zeitlichen Projektplanung (Platzhalter)}
 \end{figure}
 
-Diese genaue Planung stellt sicher, dass die anschließende praktische Umsetzung hochgradig effizient, schnell und kostensparend durchgeführt werden kann.
+Diese genaue Planung stellt sicher, dass die anschließende praktische Umsetzung effizient, schnell und kostensparend durchgeführt werden kann.
