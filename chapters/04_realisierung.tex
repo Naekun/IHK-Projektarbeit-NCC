@@ -6,7 +6,7 @@ Die Realisierungsphase wurde primär unter dem Aspekt der Kosten- und Zeitoptimi
 Dieses Vorgehen hat es ermöglicht, die kostenintensiven Cloud-Ressourcen (wie HA-VPN-Gateways, die stundenweise abgerechnet werden) erst im exakten Moment des Tests hochzufahren und nach erfolgreicher Validierung automatisiert wieder abzubauen. 
 
 \section{Vorbereitungsphase (Skripting und Variablen)}
-In dieser Phase wurde das gesamte Deployment in Form von \texttt{gcloud}-Befehlen für das Command Line Interface (CLI) vorbereitet. Um Fehler durch manuelle Eingaben in einem iterativen Prozess zu vermeiden, wurden sämtliche Bezeichnungen für Netzwerke, Regionen und IP-Adressen als globale Umgebungsvariablen definiert. 
+In dieser Phase wurde das gesamte Deployment in Form von \texttt{gcloud}-Befehlen für das Command Line Interface (CLI) vorbereitet. Um Fehler durch manuelle Eingaben in einem iterativen Prozess zu vermeiden und die Skalierbarkeit des Projekts zu vereinfachen, wurden sämtliche Bezeichnungen für Netzwerke, Regionen und IP-Adressen als globale Umgebungsvariablen definiert. 
 
 Auszug der initialen Variablen-Deklaration:
 
@@ -76,7 +76,7 @@ gcloud compute firewall-rules create "fw-allow-internal-branch" \
 \end{lstlisting}
 
 \subsection{HA-VPN und BGP-Routing}
-Anschließend wurden die Cloud Router für das dynamische BGP-Routing sowie die redundanten HA-VPN-Gateways bereitgestellt. Der Aufbau der IPsec-Tunnel wurde unter der Nutzung eines sicheren \textit{Shared Secrets} durchgeführt. Die BGP-Sitzungen wurden über standardisierte APIPA-Adressen (169.254.x.x) konfiguriert.
+Anschließend wurden die Cloud Router für das dynamische BGP-Routing sowie die redundanten HA-VPN-Gateways bereitgestellt. Der Aufbau der IPsec-Tunnel wurde unter der Nutzung eines sicheren \textit{Shared Secrets} durchgeführt. Der Aufbau der IPsec-Tunnel wurde unter der Nutzung eines sicheren Shared Secrets durchgeführt. Die Konfiguration der On-Premises-Seite des VPNs (beispielsweise auf physischen Fortinet- oder Cisco-Routern) liegt in der Verantwortung des Kunden und wird nicht über die GCP-Skripte abgebildet. Die BGP-Sitzungen wurden über standardisierte APIPA-Adressen (169.254.x.x) konfiguriert.
 
 \begin{lstlisting}[language=bash, caption={Konfiguration der HA-VPN-Gateways und BGP-Sitzungen}]
 # 1. Cloud Router und HA-VPN-Gateway anlegen

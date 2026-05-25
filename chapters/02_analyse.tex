@@ -7,18 +7,17 @@ Der Hauptstandort des Kunden in Nürnberg sowie dessen zwei Außenstellen sind a
 Die bestehende IT-Umgebung umfasst:
 \begin{itemize}
     \item Ein lokales Rechenzentrum
-    \item Mehrere manuell konfigurierte VPN-Anbindungen
+    \item Mehrere dezentral konfigurierte VPN-Anbindungen zwischen dem lokalen Rechenzentrum und den VPCs in der Google Cloud
     \item Cloud-Ressourcen innerhalb der Google Cloud Platform (GCP)
 \end{itemize}
 
 Die aktuelle Netzwerkstruktur basiert auf mehreren separaten Site-to-Site-VPN-Verbindungen. Obwohl das Unternehmen plant, schrittweise weitere Dienste in die Cloud zu migrieren, erfüllt die bestehende Netzwerkarchitektur die wachsenden Anforderungen an Skalierbarkeit und zentrale Verwaltung nicht mehr.
 
 \section{Problemanalyse}
-Mit der zunehmenden Anzahl angebundener Standorte steigt die Komplexität der bestehenden VPN-Mesh-Struktur erheblich. Die aktuelle Architektur verursacht in der Praxis folgende Probleme:
+Mit der zunehmenden Anzahl angebundener Standorte steigt die Komplexität der bestehenden VPN-Mesh-Struktur erheblich. Die bisherige Architektur verursacht in der Praxis folgende Probleme:
 \begin{itemize}
     \item Manuelle Pflege statischer Routen bei der Integration jedes neuen Subnetzes
     \item Fehlende zentrale Verwaltungsebene für das Routing
-    \item Hohe Komplexität und Fehleranfälligkeit bei Netzwerkerweiterungen
     \item Eingeschränkte Transparenz und inkonsistente Sicherheitsrichtlinien
 \end{itemize}
 
@@ -111,10 +110,10 @@ Verzögerung durch fehlende IAP-Berechtigungen in der GCP
 & \cellcolor{gyellow!40} 2 
 & Benötigte Rollen (z.\,B. Network Admin) frühzeitig beim Kunden beantragen und testen. \\ \hline
 
-Fehlerhafte Variablen und Parameter (z.\,B. falsche AS-Nummer) 
+Lückenhaftes Firewall-Konzept 
 & \cellcolor{ggreen!30} 1  
 & \cellcolor{gred!30} 3 
-& Konfiguration im Vorfeld prüfen und mithilfe von KI validieren. \\ \hline
+& Gründliche Ist-Aufnahme aller benötigten Ports vor der Migration und konsequente Umsetzung des Default-Deny-Prinzips. \\ \hline
 
 \end{tabularx}
 \caption{Auszug aus der Risikoanalyse}
