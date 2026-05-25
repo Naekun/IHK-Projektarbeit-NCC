@@ -38,8 +38,7 @@ Das neue Netzwerk wird als Hub-and-Spoke-Modell aufgebaut. Das Network Connectiv
 Die Architektur besteht aus folgenden Komponenten:
 \begin{itemize}
     \item \textbf{NCC Hub:} Die zentrale Verwaltungsebene für das Hybrid-Netzwerk.
-    \item \textbf{VPC Spokes:} Die Cloud-Netzwerke werden als Spokes (Speichen) an den Hub angebunden.
-    \item \textbf{VPN Spokes:} Die lokalen On-Premises-Standorte werden über ausfallsichere HA-VPN-Tunnel verbunden.
+    \item \textbf{VPN Spoke:} Die lokalen On-Premises-Standorte werden über ausfallsichere HA-VPN-Tunnel verbunden.
     \item \textbf{Cloud Router:} Der dynamische Routenaustausch erfolgt über das BGP. Das BGP-Peering und die ASN (Autonomous System Number) werden technisch auf dem Cloud Router konfiguriert, welcher der jeweiligen VPC zugeordnet ist, und nicht auf dem NCC Hub selbst.
 \end{itemize}
 
@@ -60,9 +59,7 @@ Router Branch A & On-Premises (VPN Spoke) & 192.168.1.0/24 & 65002 \\ \hline
 Das Sicherheitskonzept nutzt das \textit{Default-Deny}-Prinzip. Das bedeutet, dass die Firewall der Google Cloud standardmäßig allen Datenverkehr blockiert. Es werden nur notwendige Ausnahmen für den BGP-Traffic (Port 179), Ping-Tests (ICMP) und die benötigten Firmenanwendungen konfiguriert. 
 
 \subsection*{Strukturierte Deployment-Reihenfolge und Zeitplan}
-Um teure Leerlaufzeiten der Cloud-Ressourcen zu vermeiden, wurde eine feste Reihenfolge für die praktische Umsetzung geplant. Durch diese Vorbereitung kann die Infrastruktur Schritt für Schritt in wenigen Stunden aufgebaut werden. 
-
-Die folgende Tabelle zeigt die logische Abfolge der Schritte (Projektstrukturplan) sowie den dafür kalkulierten Zeitaufwand in der praktischen Realisierungsphase.
+Zur Vermeidung unnötiger Kosten durch ungenutzte Cloud-Ressourcen wurde die praktische Umsetzung in einer strikten Reihenfolge konzipiert. Diese detaillierte Vorplanung gewährleistet, dass die gesamte Infrastruktur innerhalb weniger Stunden effizient und schrittweise bereitgestellt werden kann. Die nachfolgende Tabelle veranschaulicht den logischen Ablauf sowie die kalkulierte Zeitplanung für die  Durchführungsphase.
 
 \begin{table}[!ht]
 \centering
@@ -77,9 +74,9 @@ Die folgende Tabelle zeigt die logische Abfolge der Schritte (Projektstrukturpla
 6 & Einrichten der Cloud Firewall-Regeln & Netzwerksicherheit & 1,5\,h \\ \hline
 7 & Starten von Test-VMs und Verbindungstests & Erfolgreicher Ping-Test & 2,0\,h \\ \hline
 8 & Löschen der temporären Test-VMs (Cleanup) & Kostenvermeidung & 0,5\,h \\ \hline
-\multicolumn{3}{|r|}{\textbf{Gesamtdauer der aktiven Realisierungsphase}} & \textbf{11,5\,h} \\ \hline
+\multicolumn{3}{|r|}{\textbf{Gesamtdauer der aktiven Durchführungsphase}} & \textbf{11,5\,h} \\ \hline
 \end{tabularx}
-\caption{Deployment-Reihenfolge und Zeitplanung (Realisierungsphase)}
+\caption{Deployment-Reihenfolge und Zeitplanung (Durchführungsphase)}
 \end{table}
 
 Zur visuellen Darstellung der gesamten Projektdauer (40 Stunden inklusive Planung, Konzeption und Dokumentation) wurde zusätzlich ein Gantt-Diagramm erstellt, das die Abhängigkeiten der einzelnen Phasen übersichtlich darstellt.

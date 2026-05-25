@@ -116,7 +116,7 @@ gcloud compute routers add-bgp-peer "${CLOUD_ROUTER}" \
 \end{lstlisting}
 
 \subsection{Network Connectivity Center (NCC)}
-Den Kern der Hub-and-Spoke-Architektur bildet das Network Connectivity Center. Der Hub wurde als zentrale Verwaltungsinstanz angelegt. Im Anschluss wurden die zuvor erstellten VPN-Tunnel als \textit{Spokes} an den Hub angebunden, um den nahtlosen Datentransfer zwischen den Netzwerken zu aktivieren.
+Den Kern der Hub-and-Spoke-Architektur bildet das Network Connectivity Center. Der Hub wurde als zentrale Verwaltungsinstanz angelegt. Im Anschluss wurden die zuvor erstellten VPN-Tunnel als \textit{Spoke} an den Hub angebunden, um den nahtlosen Datentransfer zwischen den Netzwerken zu aktivieren.
 
 \begin{lstlisting}[language=bash, caption={Bereitstellung des NCC Hubs und der Spokes}]
 # Zentralen Hub erstellen

@@ -1,12 +1,12 @@
 # Betriebshandbuch Teil 2: Troubleshooting
 
-Dieses Dokument beschreibt die Probleme, die während des Deployments der hybriden Netzwerkarchitektur tatsächlich aufgetreten sind. Zu jedem Punkt werden das Fehlerbild, eine wahrscheinliche Ursache und die verwendete Lösung dokumentiert.
+Dieses Dokument beschreibt die Probleme, die während des Deployments der hybriden Netzwerkarchitektur tatsächlich aufgetreten sind.
 
 ## 1. Zugriff auf Test-VMs über IAP nicht möglich
 
 ### Problem
 
-Der geplante SSH-Zugriff auf die Test-VMs über IAP konnte im Projekt nicht direkt genutzt werden.
+Der geplante SSH-Zugriff auf die Test-VMs über IAP konnte nicht direkt genutzt werden.
 
 ### Mögliche Ursache
 

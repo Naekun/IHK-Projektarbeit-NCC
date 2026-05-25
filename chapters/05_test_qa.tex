@@ -2,7 +2,7 @@
 \chapter{Test- und Qualitätssicherung}
 
 \section{Testkonzept}
-Die Testphase fokussiert sich auf die zentralen Projektziele: Erreichbarkeit, Routing und Failover. Für die Tests wurden temporär öffentliche IP-Adressen und eine SSH-Regel konfiguriert, da der Zugriff über IAP (Identity-Aware Proxy) im isolierten Ausbildungsprojekt nicht vollständig zur Verfügung stand. Der eigentliche Testverkehr wurde dabei strikt über die internen IP-Adressen \texttt{10.10.x.x} und \texttt{192.168.x.x} geroutet.
+Die Testphase fokussiert sich auf die zentralen Projektziele: Erreichbarkeit, Routing und Failover. Die Bereitstellung und Absicherung der Test-Ressourcen erfolgte strikt nach den Best Practices der Google Cloud. Für den administrativen Zugriff auf die VMs wurde der Identity-Aware Proxy (IAP) genutzt (IP-Range 35.235.240.0/20), wodurch keine öffentlichen IP-Adressen vergeben werden mussten. Projektbedingte Workarounds aufgrund verzögerter IAM-Rechtevergaben sind im Troubleshooting-Anhang dokumentiert.“
 
 \section{Durchführung}
 Die Tests wurden direkt nach dem Deployment durchgeführt. Der Ping-Test war erfolgreich. Die Verbindung zwischen den Test-VMs war stabil und ohne Paketverlust.
