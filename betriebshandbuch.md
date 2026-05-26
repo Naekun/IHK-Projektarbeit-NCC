@@ -283,6 +283,6 @@ gcloud compute routers get-status "${CLOUD_ROUTER}" \
 
 # Firewall-Regeln
 gcloud compute firewall-rules list \
-  --filter="network:('${CLOUD_VPC}' OR '${BRANCH_VPC}')" \
+  --filter="network:(${CLOUD_VPC} OR ${BRANCH_VPC})" \
   --format="table(name:label=NAME, network:label=NETWORK, direction:label=DIRECTION, priority:label=PRIORITY, sourceRanges.list():label=SRC_RANGES, allowed[].map().firewall_rule().list():label=ALLOWED_PROTOCOLS)"
 ```
