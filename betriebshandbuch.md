@@ -1,6 +1,6 @@
 # Betriebshandbuch Teil 1: Standardbetrieb
 
-Dieses Dokument beschreibt die reguläre Bereitstellung und den Betrieb einer hybriden Netzwerkarchitektur mit Google Cloud Network Connectivity Center (NCC), HA VPN und Cloud Router. Es verwendet den aktuellen `gcloud`-Syntax für VPN-Spokes und setzt einen sauberen Zugriff auf Test-VMs über Identity-Aware Proxy (IAP) voraus, sodass keine öffentlichen IP-Adressen für Administrationszugriffe benötigt werden.[cite:144][cite:146][cite:149]
+Dieses Dokument beschreibt die reguläre Bereitstellung und den Betrieb einer hybriden Netzwerkarchitektur mit Google Cloud Network Connectivity Center (NCC), HA VPN und Cloud Router. Es verwendet den aktuellen `gcloud`-Syntax für VPN-Spokes und setzt einen sauberen Zugriff auf Test-VMs über Identity-Aware Proxy (IAP) voraus, sodass keine öffentlichen IP-Adressen für Administrationszugriffe benötigt werden.
 
 ## Zweck und Geltungsbereich
 
@@ -8,13 +8,13 @@ Das Handbuch dient als Arbeitsgrundlage für die Bereitstellung, Erweiterung und
 
 ## Voraussetzungen
 
-Vor der Bereitstellung müssen die erforderlichen APIs aktiviert sein und die ausführende Person benötigt passende IAM-Berechtigungen für Compute Engine, Cloud Router, VPN und Network Connectivity Center.[cite:144][cite:149]
+Vor der Bereitstellung müssen die erforderlichen APIs aktiviert sein und die ausführende Person benötigt passende IAM-Berechtigungen für Compute Engine, Cloud Router, VPN und Network Connectivity Center.
 
-Für den administrativen Zugriff ohne öffentliche IP-Adressen wird IAP TCP Forwarding verwendet. Dafür müssen IAP vorbereitet, die notwendigen IAM-Rollen vergeben und Firewall-Regeln für die IAP-Quellnetze gesetzt werden.[cite:144][cite:146]
+Für den administrativen Zugriff ohne öffentliche IP-Adressen wird IAP TCP Forwarding verwendet. Dafür müssen IAP vorbereitet, die notwendigen IAM-Rollen vergeben und Firewall-Regeln für die IAP-Quellnetze gesetzt werden.
 
 ## Architekturübersicht
 
-Die Architektur besteht aus einer Cloud-VPC, einer angebundenen Standort-VPC, zwei HA-VPN-Tunneln, zwei Cloud Routern und einem NCC-Hub mit einem VPN-Spoke. Der dynamische Routenaustausch erfolgt über BGP auf den Cloud Routern, nicht auf dem NCC-Hub.[cite:149][cite:121]
+Die Architektur besteht aus einer Cloud-VPC, einer angebundenen Standort-VPC, zwei HA-VPN-Tunneln, zwei Cloud Routern und einem NCC-Hub mit einem VPN-Spoke. Der dynamische Routenaustausch erfolgt über BGP auf den Cloud Routern, nicht auf dem NCC-Hub.
 
 ## 1. Umgebungsvariablen vorbereiten
 
@@ -74,7 +74,7 @@ gcloud compute networks subnets create "${BRANCH_SUBNET}" \
 
 ## 3. Firewall-Regeln definieren
 
-Die internen Firewall-Regeln erlauben nur den erforderlichen Verkehr zwischen den Netzen. Für IAP-Zugriffe auf VM-Instanzen wird zusätzlich TCP Port 22 aus dem IAP-Bereich `35.235.240.0/20` freigegeben.[cite:144][cite:148]
+Die internen Firewall-Regeln erlauben nur den erforderlichen Verkehr zwischen den Netzen. Für IAP-Zugriffe auf VM-Instanzen wird zusätzlich TCP Port 22 aus dem IAP-Bereich `35.235.240.0/20` freigegeben.
 
 ```bash
 gcloud compute firewall-rules create "fw-allow-internal-eu" \
@@ -92,7 +92,7 @@ gcloud compute firewall-rules create "fw-allow-internal-branch" \
 
 ## 4. Cloud Router und HA-VPN-Gateways erstellen
 
-Cloud Router übernimmt den BGP-basierten Routenaustausch. HA VPN benötigt zwei Tunnel pro Verbindung, um Hochverfügbarkeit zu ermöglichen.[cite:121][cite:153]
+Cloud Router übernimmt den BGP-basierten Routenaustausch. HA VPN benötigt zwei Tunnel pro Verbindung, um Hochverfügbarkeit zu ermöglichen.
 
 ```bash
 gcloud compute routers create "${CLOUD_ROUTER}" \
@@ -212,7 +212,7 @@ gcloud compute routers add-bgp-peer "${BRANCH_ROUTER}" \
 
 ## 6. NCC-Hub und VPN-Spoke anlegen
 
-Für den aktuellen `gcloud`-Syntax wird der Spoke mit `linked-vpn-tunnels create` erstellt. Die Tunnel werden als vollständige Compute-API-URIs übergeben.[cite:149][cite:151]
+Für den aktuellen `gcloud`-Syntax wird der Spoke mit `linked-vpn-tunnels create` erstellt. Die Tunnel werden als vollständige Compute-API-URIs übergeben.
 
 ```bash
 gcloud network-connectivity hubs create "${HUB_NAME}" \
@@ -231,7 +231,7 @@ gcloud network-connectivity spokes linked-vpn-tunnels create "${SPOKE_NAME}" \
 
 ## 7. Test-VMs ohne öffentliche IP anlegen
 
-Für den Regelbetrieb werden Test-VMs ohne externe Adresse bereitgestellt. Der Zugriff erfolgt ausschließlich über IAP TCP Forwarding.[cite:145][cite:146]
+Für den Regelbetrieb werden Test-VMs ohne externe Adresse bereitgestellt. Der Zugriff erfolgt ausschließlich über IAP TCP Forwarding.
 
 ```bash
 gcloud compute instances create "vm-cloud" \
@@ -251,7 +251,7 @@ gcloud compute instances create "vm-branch" \
 
 ## 8. Zugriff über IAP und Betriebsprüfung
 
-SSH-Zugriffe erfolgen mit `--tunnel-through-iap`. Damit bleibt die Administrationsoberfläche ohne öffentliche Adresse erreichbar.[cite:144][cite:146]
+SSH-Zugriffe erfolgen mit `--tunnel-through-iap`. Damit bleibt die Administrationsoberfläche ohne öffentliche Adresse erreichbar.
 
 ```bash
 export CLOUD_VM_IP=$(gcloud compute instances describe "vm-cloud" --zone="${ZONE}" --format='get(networkInterfaces[0].networkIP)')
@@ -268,7 +268,7 @@ gcloud compute ssh "vm-branch" \
 
 ## 9. Status und Dokumentation prüfen
 
-Beim Cloud Router wird im Statusfeld `UP` angezeigt, wenn die BGP-Sitzung erfolgreich aufgebaut wurde. Das entspricht dem BGP-Zustand `Established`.[cite:121]
+Beim Cloud Router wird im Statusfeld `UP` angezeigt, wenn die BGP-Sitzung erfolgreich aufgebaut wurde. Das entspricht dem BGP-Zustand `Established`.
 
 ```bash
 # BGP Peer Status
