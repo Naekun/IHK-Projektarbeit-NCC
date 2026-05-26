@@ -1,12 +1,12 @@
 % ---------- Datei: chapters/04_realisierung.tex ----------
 \chapter{Realisierungsphase}
 
-Die Realisierungsphase wurde primär unter dem Aspekt der Kosten- und Zeitoptimierung durchgeführt. Anstatt die Netzwerkinfrastruktur zeitaufwendig und fehleranfällig über die grafische Benutzeroberfläche (GCP Console) zusammenzuklicken, wurde die gesamte Bereitstellung in zwei Phasen unterteilt: die Vorbereitungsphase und die Ausführungsphase.
+Die Realisierungsphase wurde primär unter dem Aspekt der Kosten- und Zeitoptimierung durchgeführt. Anstatt die Netzwerkinfrastruktur zeitaufwendig über die grafische Benutzeroberfläche (GCP Console) manuell zu konfigurieren, wurde die Bereitstellung in eine Skript-Vorbereitungsphase und eine automatisierte Ausführungsphase unterteilt.
 
-Dieses Vorgehen hat es ermöglicht, die kostenintensiven Cloud-Ressourcen (wie HA-VPN-Gateways, die stundenweise abgerechnet werden) erst im exakten Moment des Tests hochzufahren und nach erfolgreicher Validierung automatisiert wieder abzubauen. 
+Dieses Vorgehen ermöglichte es, kostenintensive Cloud-Ressourcen (wie HA-VPN-Gateways) erst unmittelbar zum Testzeitpunkt bereitzustellen und nach erfolgreicher Validierung wieder abzubauen. 
 
 \section{Vorbereitungsphase (Skripting und Variablen)}
-In dieser Phase wurde das gesamte Deployment in Form von \texttt{gcloud}-Befehlen für das Command Line Interface (CLI) vorbereitet. Um Fehler durch manuelle Eingaben in einem iterativen Prozess zu vermeiden und die Skalierbarkeit des Projekts zu vereinfachen, wurden sämtliche Bezeichnungen für Netzwerke, Regionen und IP-Adressen als globale Umgebungsvariablen definiert. 
+Das gesamte Deployment wurde in Form von \texttt{gcloud}-Befehlen für das Command Line Interface (CLI) vorbereitet. Um manuelle Eingabefehler zu vermeiden, wurden Netzwerke, Regionen und IP-Adressen als globale Umgebungsvariablen definiert. 
 
 Auszug der initialen Variablen-Deklaration:
 
@@ -33,24 +33,20 @@ export BRANCH_GW="vpngw-branch-a"
 
 # NCC Hub & HA-VPN Shared Secret
 export HUB_NAME="ncc-hub-global"
+export SPOKE_NAME="spoke-branch-a"
 export SHARED_SECRET="secure-ikev2-key-2026"
 
-# Tunnel- und BGP-Parameter (Tunnel 0)
+# Tunnel- und BGP-Parameter (Auszug Tunnel 0)
 export TUN_EU_TO_BR_0="tunnel-eu-to-br-0"
 export EU_BGP_0_IP="169.254.1.1"
 export BR_BGP_0_IP="169.254.1.2"
-
-# Tunnel- und BGP-Parameter (Tunnel 1)
-export TUN_EU_TO_BR_1="tunnel-eu-to-br-1"
-export EU_BGP_1_IP="169.254.2.1"
-export BR_BGP_1_IP="169.254.2.2"
 \end{lstlisting}
 
 \section{Ausführungsphase (One-Pass Deployment)}
-Nach Abschluss der Skripterstellung lässt sich die gesamte Zielarchitektur in einem einzigen Durchgang (One-Pass) fehlerfrei in der Cloud hochfahren. Die Ausführung erfolgt dabei in der vorkonzipierten Reihenfolge.
+Durch die Vorbereitung der Skripte ließ sich die gesamte Zielarchitektur in der vorkonzipierten Reihenfolge fehlerfrei in der Cloud implementieren.
 
 \subsection{VPCs, Subnetze und Firewall}
-Im ersten Schritt wurden die Basisnetzwerke im Custom-Subnet-Modus erstellt. Die Google Cloud Firewall wurde nach dem \textit{Default-Deny}-Prinzip konfiguriert, sodass ausschließlich explizit erlaubter interner Traffic (SSH und ICMP für Ping-Tests) zugelassen wird.
+Im ersten Schritt wurden die Basisnetzwerke im Custom-Subnet-Modus erstellt. Die Google Cloud Firewall wurde nach dem \textit{Default-Deny}-Prinzip konfiguriert, sodass ausschließlich explizit erlaubter interner Traffic (SSH und ICMP für Ping-Tests) sowie Zugriffe über den Identity-Aware Proxy (IAP) zugelassen werden.
 
 \begin{lstlisting}[language=bash, caption={Erstellung der Basisnetzwerke und Firewall-Regeln}]
 # Basis-VPCs anlegen
@@ -76,7 +72,7 @@ gcloud compute firewall-rules create "fw-allow-internal-branch" \
 \end{lstlisting}
 
 \subsection{HA-VPN und BGP-Routing}
-Anschließend wurden die Cloud Router für das dynamische BGP-Routing sowie die redundanten HA-VPN-Gateways bereitgestellt. Der Aufbau der IPsec-Tunnel wurde unter der Nutzung eines sicheren \textit{Shared Secrets} durchgeführt. Der Aufbau der IPsec-Tunnel wurde unter der Nutzung eines sicheren Shared Secrets durchgeführt. Die Konfiguration der On-Premises-Seite des VPNs (beispielsweise auf physischen Fortinet- oder Cisco-Routern) liegt in der Verantwortung des Kunden und wird nicht über die GCP-Skripte abgebildet. Die BGP-Sitzungen wurden über standardisierte APIPA-Adressen (169.254.x.x) konfiguriert.
+Anschließend wurden die Cloud Router für das BGP-Routing sowie die redundanten HA-VPN-Gateways bereitgestellt. Der Aufbau der IPsec-Tunnel erfolgte unter Nutzung eines sicheren \textit{Shared Secrets}. Für die isolierte Testumgebung wurden sowohl die Cloud- als auch die On-Premises-Seite simuliert. Die BGP-Sitzungen wurden über standardisierte APIPA-Adressen (169.254.x.x) konfiguriert. 
 
 \begin{lstlisting}[language=bash, caption={Konfiguration der HA-VPN-Gateways und BGP-Sitzungen}]
 # 1. Cloud Router und HA-VPN-Gateway anlegen
@@ -100,7 +96,7 @@ gcloud compute routers add-bgp-peer "${CLOUD_ROUTER}" \
   --peer-name="bgp-branch-a-0" --interface="if-eu-to-br-0" \
   --peer-ip-address="${BR_BGP_0_IP}" --peer-asn="${BRANCH_ASN}" --region="${REGION}"
 
-# 3. IPsec Tunnel 1 (Interface 1 für Hochverfügbarkeit) erstellen und BGP konfigurieren
+# 3. IPsec Tunnel 1 (Interface 1 für Hochverfügbarkeit) erstellen
 gcloud compute vpn-tunnels create "${TUN_EU_TO_BR_1}" \
   --peer-gcp-gateway="${BRANCH_GW}" --region="${REGION}" \
   --ike-version=2 --shared-secret="${SHARED_SECRET}" \

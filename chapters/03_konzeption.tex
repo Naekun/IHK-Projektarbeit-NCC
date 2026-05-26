@@ -1,16 +1,15 @@
 % ---------- Datei: chapters/03_konzeption.tex ----------
 \chapter{Konzeptionsphase}
 
-Die Konzeptionsphase ist die Basis dieses Projekts. Das Ziel ist, die aktiven Laufzeiten der Cloud-Ressourcen und damit die laufenden Kosten für den Kunden so gering wie möglich zu halten. Deshalb wurden alle Parameter wie IP-Adressen, ASN-Nummern und Firewall-Regeln im Voraus genau geplant. Diese detaillierte Vorbereitung ermöglicht es, die praktische Umsetzung in der Google Cloud schnell, fehlerfrei und in nur wenigen Stunden durchzuführen.
+Ziel der Konzeption ist es, die Projektanforderungen technisch zu übersetzen und die anfallenden Cloud-Laufzeiten während der Implementierung zu minimieren. Durch die Vorabdefinition aller Parameter wie IP-Adressen, ASN-Nummern und Firewall-Regeln wird sichergestellt, dass die anschließende praktische Umsetzung in der Google Cloud zügig und fehlerfrei erfolgen kann.
 
 \section{Technologieauswahl und Nutzwertanalyse}
-Um die lokalen Standorte mit der Cloud zu verbinden, wurden verschiedene Technologien verglichen. Die Entscheidung basiert auf einer Nutzwertanalyse, bei der Kosten und Verfügbarkeit die wichtigste Rolle spielen.
+Um die lokalen Standorte mit der Cloud zu verbinden, wurden drei Technologien hinsichtlich Ausfallsicherheit, Skalierbarkeit, Kosten und Administrationsaufwand verglichen:
 
-Verglichen wurden folgende Optionen:
 \begin{itemize}
-    \item \textbf{Option 1 (HA Cloud VPN mit NCC):} Redundante Cloud-VPN-Tunnel über das Internet mit einer garantierten Verfügbarkeit von 99,99\,\% (SLA).
-    \item \textbf{Option 2 (Partner Interconnect):} Eine direkte und feste Leitung über einen Service-Provider.
-    \item \textbf{Option 3 (Klassisches VPN-Mesh):} Die Erweiterung der alten VPN-Struktur ohne eine zentrale Verwaltungsebene.
+    \item \textbf{Option 1 (HA Cloud VPN mit NCC):} Redundante Cloud-VPN-Tunnel über das Internet mit einer garantierten Verfügbarkeit von 99,99\,\% (SLA) und zentraler Verwaltungsebene.
+    \item \textbf{Option 2 (Partner Interconnect):} Direkte und dedizierte Leitungsanbindung über einen Service-Provider.
+    \item \textbf{Option 3 (Klassisches VPN-Mesh):} Erweiterung der bestehenden VPN-Struktur ohne zentrale Verwaltungsebene.
 \end{itemize}
 
 Die Bewertung erfolgt auf einer Skala von 1 (sehr schlecht) bis 5 (sehr gut).
@@ -22,27 +21,27 @@ Die Bewertung erfolgt auf einer Skala von 1 (sehr schlecht) bis 5 (sehr gut).
 \textbf{Kriterium} & \textbf{Gewichtung} & \textbf{HA VPN} & \textbf{Interconnect} & \textbf{VPN-Mesh} \\ \hline
 Ausfallsicherheit (SLA) & 30\,\% & 5 & 4 & 3 \\ \hline
 Skalierbarkeit & 30\,\% & 5 & 4 & 2 \\ \hline
-Kosten (Initial \& Laufend) & 20\,\% & 4 & 2 & 5 \\ \hline
-Administrationsaufwand & 20\,\% & 5 & 3 & 2 \\ \hline
+Kosten (Initialisierung \& Hardware) & 20\,\% & 4 & 2 & 5 \\ \hline
+Administrationsaufwand (Betrieb) & 20\,\% & 5 & 3 & 2 \\ \hline
 \textbf{Gesamtnutzen} & \textbf{100\,\%} & \cellcolor{ggreen!30}\textbf{4,8} & \cellcolor{gyellow!40}\textbf{3,4} & \cellcolor{gred!30}\textbf{2,9} \\ \hline
 \end{tabularx}
 \caption{Nutzwertanalyse der Anbindungstechnologien}
 \end{table}
 
-\textbf{Entscheidung:} Option 1 (\textbf{HA Cloud VPN mit NCC}) erreicht das beste Ergebnis. Option 2 (Partner Interconnect) ist für die aktuellen Anforderungen des Kunden zu teuer und dauert in der Bereitstellung durch den Provider zu lange. Option 1 bietet die geforderte Ausfallsicherheit und ermöglicht eine schnelle und flexible Umsetzung des Projekts.
+\subsection*{Entscheidung} 
+Option 1 (\textbf{HA Cloud VPN mit NCC}) erreicht das beste Ergebnis. Option 2 ist für die aktuellen Anforderungen zu kostenintensiv und die Bereitstellung zu langwierig. Option 3 verursacht im laufenden Betrieb unverhältnismäßig hohen Administrationsaufwand. Option 1 bietet die geforderte Ausfallsicherheit bei gleichzeitig flexibler Umsetzung.
 
 \section{Netzwerkdesign und NCC-Architektur}
+Das Netzwerk wird als Hub-and-Spoke-Modell realisiert. Das Network Connectivity Center (NCC) dient als zentrale Verwaltungsebene in der Google Cloud. 
 
-Das neue Netzwerk wird als Hub-and-Spoke-Modell aufgebaut. Das Network Connectivity Center (NCC) dient dabei als zentrale Verwaltungsebene in der Google Cloud. 
-
-Die Architektur besteht aus folgenden Komponenten:
+Die Architektur umfasst:
 \begin{itemize}
-    \item \textbf{NCC Hub:} Die zentrale Verwaltungsebene für das Hybrid-Netzwerk.
-    \item \textbf{VPN Spoke:} Die lokalen On-Premises-Standorte werden über ausfallsichere HA-VPN-Tunnel verbunden.
-    \item \textbf{Cloud Router:} Der dynamische Routenaustausch erfolgt über das BGP. Das BGP-Peering und die ASN (Autonomous System Number) werden technisch auf dem Cloud Router konfiguriert, welcher der jeweiligen VPC zugeordnet ist, und nicht auf dem NCC Hub selbst.
+    \item \textbf{NCC Hub:} Zentrale Steuerungsinstanz für das Hybrid-Netzwerk.
+    \item \textbf{VPN Spoke:} Anbindung der On-Premises-Standorte über HA-VPN-Tunnel.
+    \item \textbf{Cloud Router:} Übernimmt den dynamischen Routenaustausch via BGP. Das Peering wird direkt auf dem Cloud Router der jeweiligen VPC konfiguriert, nicht auf dem NCC Hub.
 \end{itemize}
 
-Durch dieses Design lernt das Netzwerk automatisch alle neuen Routen und verteilt sie an alle angebundenen Standorte. Die manuelle Pflege statischer Routen ist somit nicht mehr nötig. Um Konflikte bei den IP-Adressen zu vermeiden und eine klare Struktur für zukünftiges Wachstum zu schaffen, wurde die folgende Netzwerkplanung vorbereitet:
+Dieses Design ermöglicht die automatische Verteilung neuer Routen an alle Standorte. Zur Vermeidung von IP-Adresskonflikten wurde folgender Plan erstellt:
 
 \begin{table}[!ht]
 \centering
@@ -56,10 +55,10 @@ Router Branch A & On-Premises (VPN Spoke) & 192.168.1.0/24 & 65002 \\ \hline
 \end{table}
 
 \section{Sicherheitskonzept und Zeitplanung}
-Das Sicherheitskonzept nutzt das \textit{Default-Deny}-Prinzip. Das bedeutet, dass die Firewall der Google Cloud standardmäßig allen Datenverkehr blockiert. Es werden nur notwendige Ausnahmen für den BGP-Traffic (Port 179), Ping-Tests (ICMP) und die benötigten Firmenanwendungen konfiguriert. 
+Das Sicherheitskonzept basiert auf dem \textit{Default-Deny}-Prinzip. Die Google Cloud Firewall blockiert standardmäßig jeglichen Datenverkehr. Es werden gezielt Ausnahmen für den BGP-Traffic (Port 179), ICMP-Tests und erforderliche Firmenanwendungen definiert.
 
-\subsection*{Strukturierte Deployment-Reihenfolge und Zeitplan}
-Zur Vermeidung unnötiger Kosten durch ungenutzte Cloud-Ressourcen wurde die praktische Umsetzung in einer strikten Reihenfolge konzipiert. Diese detaillierte Vorplanung gewährleistet, dass die gesamte Infrastruktur innerhalb weniger Stunden effizient und schrittweise bereitgestellt werden kann. Die nachfolgende Tabelle veranschaulicht den logischen Ablauf sowie die kalkulierte Zeitplanung für die  Durchführungsphase.
+\subsection*{Deployment-Reihenfolge und Zeitplan}
+Eine strikte Ausführungsreihenfolge stellt sicher, dass die Cloud-Ressourcen effizient bereitgestellt werden. Die folgende Tabelle veranschaulicht den Ablauf für die Implementierungsphase.
 
 \begin{table}[!ht]
 \centering
@@ -79,7 +78,7 @@ Zur Vermeidung unnötiger Kosten durch ungenutzte Cloud-Ressourcen wurde die pra
 \caption{Deployment-Reihenfolge und Zeitplanung (Durchführungsphase)}
 \end{table}
 
-Zur visuellen Darstellung der gesamten Projektdauer (40 Stunden inklusive Planung, Konzeption und Dokumentation) wurde zusätzlich ein Gantt-Diagramm erstellt, das die Abhängigkeiten der einzelnen Phasen übersichtlich darstellt.
+Zur visuellen Übersicht der Gesamtdauer (40 Stunden) wurde die zeitliche Abhängigkeit aller Projektphasen in einem Gantt-Diagramm abgebildet.
 
 \begin{table}[!ht]
 \centering
@@ -93,7 +92,7 @@ Zur visuellen Darstellung der gesamten Projektdauer (40 Stunden inklusive Planun
 1. Planung & \cellcolor{gblue!30} 8h & & & & \\ \hline
 2. Vorbereitung & & \cellcolor{gred!30} 6h & & & \\ \hline
 3. Durchführung & & & \cellcolor{gyellow!40} 8h & \cellcolor{gyellow!40} 4h & \\ \hline
-4. Test \& QA & & & & \cellcolor{ggreen!30} 5h & \\ \hline
+4. Test \& QA & & & & & \cellcolor{ggreen!30} 5h \\ \hline
 5. Übergabe & & & & & \cellcolor{gblue!30} 3h \\ \hline
 6. Dokumentation & \cellcolor{gred!30} 1h & \cellcolor{gred!30} 1h & \cellcolor{gred!30} 1h & & \cellcolor{gred!30} 3h \\ \hline
 \hline
@@ -101,5 +100,3 @@ Zur visuellen Darstellung der gesamten Projektdauer (40 Stunden inklusive Planun
 \end{tabularx}
 \caption{Gantt-Diagramm als tabellarische Projektplanung (40 Stunden)}
 \end{table}
-
-Diese genaue Planung stellt sicher, dass die anschließende praktische Umsetzung effizient, schnell und kostensparend durchgeführt werden kann.

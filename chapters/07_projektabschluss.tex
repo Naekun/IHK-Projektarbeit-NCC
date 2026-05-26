@@ -2,7 +2,7 @@
 \chapter{Projektabschluss}
 
 \section{Soll-Ist-Vergleich}
-Alle im Projektantrag definierten Ziele wurden erfolgreich erreicht. Eine zentral verwaltete Hub-and-Spoke-Architektur mit dem Google Cloud Network Connectivity Center (NCC) hat die alte, unübersichtliche VPN-Struktur abgelöst. Das neue Setup mit HA VPN und dynamischem BGP-Routing läuft stabil und bietet die geforderte Ausfallsicherheit. Auch die Sicherheitsvorgaben (Default-Deny in der Firewall) und das zentrale Monitoring wurden wie geplant umgesetzt.
+Das Projekt hat alle im Antrag definierten Ziele erfolgreich erfüllt. Eine zentral verwaltete Hub-and-Spoke-Architektur mit dem Google Cloud Network Connectivity Center (NCC) hat die unübersichtliche VPN-Struktur abgelöst. Das neue Setup mit HA VPN und dynamischem BGP-Routing läuft stabil und bietet die geforderte Ausfallsicherheit. Auch die Umsetzung der Sicherheitsvorgaben (Default-Deny) und des zentralen Monitorings hat wie geplant stattgefunden.
 
 \begin{table}[!ht]
 \centering
@@ -19,7 +19,7 @@ Monitoring & Zentrale Überwachung & Erreicht \\ \hline
 \end{table}
 
 \section{Zeitaufwand}
-Die geplante Projektzeit von 40 Stunden wurde mit 39,5 Stunden leicht unterschritten. Dabei hat es kleinere zeitliche Verschiebungen zwischen den Phasen gegeben: In die Vorbereitung wurde etwas mehr Zeit investiert (+1,5\,h), um das Skripting für das Deployment detailliert auszuarbeiten. Diese gute Vorarbeit hat sich jedoch ausgezahlt, da die eigentliche Bereitstellung in der Cloud dadurch deutlich schneller und nahezu fehlerfrei abgelaufen ist (-2,0\,h).
+Die tatsächliche Projektzeit hat die geplanten 40 Stunden mit 39,5 Stunden leicht unterschritten. Dabei hat es kleinere Verschiebungen gegeben: Die Vorbereitungsphase hat etwas mehr Zeit beansprucht (+1,5\,h), um das Skripting für das Deployment detailliert auszuarbeiten. Diese Vorarbeit hat sich jedoch ausgezahlt, da die anschließende Cloud-Bereitstellung dadurch deutlich schneller und nahezu fehlerfrei abgelaufen ist (-2,0\,h).
 
 \begin{table}[!ht]
 \centering
@@ -38,12 +38,9 @@ Dokumentation & 6 & 6 \\ \hline
 \end{table}
 
 \section{Fazit und Ausblick}
-Die Umstellung auf eine zentrale NCC-Architektur in der Google Cloud reduziert den operativen Aufwand im Netzwerk deutlich. Durch das automatisierte BGP-Routing skaliert die Infrastruktur jetzt optimal. Neue Standorte lassen sich so in Zukunft schnell und nach einem festen Standard anbinden.
+Die Umstellung auf eine zentrale NCC-Architektur in der Google Cloud reduziert den operativen Aufwand im Netzwerk deutlich. Durch das automatisierte BGP-Routing skaliert die Infrastruktur optimal. Neue Standorte lassen sich so in Zukunft schnell und nach einem festen Standard anbinden.
 
-\vspace{0.3cm}
-\textbf{Einfluss und Mehrwert von Künstlicher Intelligenz (KI)} \\
-Die direkte Nutzung von Künstlicher Intelligenz hat maßgeblich zur schnellen Umsetzung dieses Projekts beigetragen. Passend zur Google Cloud wurde dabei gezielt das Modell \textbf{Google Gemini 3.1 Pro} ausgewählt. Bei unerwarteten Herausforderungen während des Deployments -- zum Beispiel mit der neuen \texttt{gcloud}-Syntax für NCC-Spokes oder unklaren BGP-Zuständen -- hat die KI die Fehlersuche sehr beschleunigt. Statt lange in Dokumentationen zu suchen, haben präzise Prompts sofort funktionierende Lösungen geliefert.
+\subsection*{Einfluss und Einsatz von KI}
+Die Nutzung von Künstlicher Intelligenz (\textbf{Google Gemini 3.1 Pro}) hat das Projekt als effizientes Hilfsmittel begleitet. Besonders bei der Validierung neuer \texttt{gcloud}-Syntax für NCC-Spokes und bei der Strukturierung des \LaTeX-Codes für diese Dokumentation hat das Tool den zeitlichen Rechercheaufwand reduziert.
 
-Auch nach der eigentlichen Bereitstellung hat sich die KI als großer Gewinn erwiesen. Sie hat sehr effizient dabei geholfen, Konfigurationen zu überprüfen, die Deployment-Phase zu analysieren und das Betriebs- sowie Troubleshooting-Handbuch zu erstellen. Darüber hinaus wurde die KI genutzt, um den \LaTeX-Code für diese Projektdokumentation zu strukturieren und zu korrigieren. 
-
-Ich bin davon überzeugt, dass solche Technologien die IT-Branche gerade stark verändern. Die Möglichkeit, komplexes Fachwissen in Sekundenbruchteilen abzurufen, beschleunigt den eigenen Lernprozess extrem. Zusammenfassend hat das Projekt verdeutlicht: Die Kombination aus klassischem IT-Wissen und präzisem KI-Einsatz steigert die Effizienz in allen Projektphasen enorm -- vom Troubleshooting bis zur finalen Dokumentation.
+Trotz der KI-Unterstützung haben alle architektonischen Entscheidungen, die fundierte Fehlersuche (Troubleshooting) sowie die praktische Validierung eine eigenständige fachliche Leistung erfordert. Das Projekt hat verdeutlicht, dass KI ein wertvolles Werkzeug zur Effizienzsteigerung ist, belastbares IT-Fachwissen für die Bewertung der Ergebnisse jedoch zwingend voraussetzt.

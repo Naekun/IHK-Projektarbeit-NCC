@@ -2,13 +2,13 @@
 \chapter{Einleitung}
 
 \section{Projektumfeld}
-Das Projekt wurde im Rahmen meiner Umschulung zur Fachinformatikerin für Systemintegration bei der Söldner Consult GmbH in Nürnberg durchgeführt. Das Unternehmen ist ein spezialisiertes IT-Beratungshaus mit Fokus auf Cloud Computing (GCP, Azure, AWS), Datacenter und Networking.
+Das Projekt wurde im Rahmen meines Praktikums bei der Söldner Consult GmbH in Nürnberg durchgeführt. Das Unternehmen ist ein IT-Beratungshaus mit Schwerpunkt auf Cloud Computing (GCP, Azure, AWS), Datacenter und Networking.
 
-Der Kunde ist ein mittelständisches Unternehmen aus dem Finanzsektor mit Hauptstandort in Nürnberg sowie zwei Außenstellen. Die Söldner Consult GmbH agiert in diesem Projekt ausschließlich als beratender Dienstleister; die im Folgenden beschriebene Infrastruktur bezieht sich rein auf den Status Quo und die Zielumgebung des Kunden. 
+Der Kunde ist ein mittelständisches Unternehmen aus dem Finanzsektor mit Hauptstandort in Nürnberg und zwei Außenstellen. Die Söldner Consult GmbH war in diesem Projekt als beratender Dienstleister tätig; die beschriebene Infrastruktur bezieht sich auf die Ausgangs- und Zielumgebung des Kunden.
 
-Aus Gründen des Datenschutzes und der Systemsicherheit wurde die praktische Umsetzung für dieses Projekt komplett in einer isolierten Testumgebung durchgeführt. Daher enthält diese Dokumentation keine realen Systemnamen oder IP-Adressen des Kunden.
+Aus Gründen des Datenschutzes und der Systemsicherheit wurde die praktische Umsetzung in einer isolierten Testumgebung durchgeführt. Daher enthält diese Dokumentation keine realen Systemnamen oder IP-Adressen des Kunden.
 
 \section{Projektbeschreibung und Zielsetzung}
-Die bisherige Netzwerkarchitektur des Kunden in der Google Cloud Platform (GCP) ist historisch gewachsen. Sie besteht aus mehreren isolierten Virtual Private Clouds (VPCs) und dezentral konfigurierten VPN-Verbindungen zu den On-Premises-Standorten. Diese Struktur ist wartungsintensiv, fehleranfällig und skaliert bei der Anbindung neuer Zweigstellen schlecht.
+Die ursprüngliche Netzwerkarchitektur des Kunden in der Google Cloud Platform (GCP) war historisch gewachsen. Sie bestand aus mehreren isolierten Virtual Private Clouds (VPCs) und dezentral konfigurierten VPN-Verbindungen zu den On-Premises-Standorten. Diese Struktur war wartungsintensiv, fehleranfällig und für die Anbindung neuer Zweigstellen nur eingeschränkt skalierbar.
 
-Das Ziel dieses Projekts ist die Konzeption und Implementierung einer zentral verwalteten Hybrid-Cloud-Netzwerkarchitektur. Als technologische Basis dient das Google Cloud Network Connectivity Center (NCC). Durch den Aufbau einer Hub-and-Spoke-Topologie wurde eine sichere, hochverfügbare und standardisierte Kommunikation zwischen dem lokalen Rechenzentrum, den Zweigstellen und den Cloud-Ressourcen etabliert.
+Ziel des Projekts war die Konzeption und Implementierung einer zentral verwalteten Hybrid-Cloud-Netzwerkarchitektur. Technologische Grundlage war das Google Cloud Network Connectivity Center (NCC). Mit einer Hub-and-Spoke-Topologie sollte eine sichere, hochverfügbare und standardisierte Kommunikation zwischen lokalem Rechenzentrum, Zweigstellen und Cloud-Ressourcen geschaffen werden.

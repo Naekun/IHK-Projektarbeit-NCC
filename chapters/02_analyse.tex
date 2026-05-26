@@ -2,33 +2,33 @@
 \chapter{Analysephase}
 
 \section{Ist-Zustand}
-Der Hauptstandort des Kunden in Nürnberg sowie dessen zwei Außenstellen sind aktuell über eine historisch gewachsene Infrastruktur vernetzt. 
+Der Hauptstandort des Kunden in Nürnberg sowie dessen zwei Außenstellen waren vor Projektbeginn über eine historisch gewachsene Infrastruktur vernetzt. 
 
-Die bestehende IT-Umgebung umfasst:
+Die bisherige IT-Umgebung umfasste:
 \begin{itemize}
     \item Ein lokales Rechenzentrum
     \item Mehrere dezentral konfigurierte VPN-Anbindungen zwischen dem lokalen Rechenzentrum und den VPCs in der Google Cloud
     \item Cloud-Ressourcen innerhalb der Google Cloud Platform (GCP)
 \end{itemize}
 
-Die aktuelle Netzwerkstruktur basiert auf mehreren separaten Site-to-Site-VPN-Verbindungen. Obwohl das Unternehmen plant, schrittweise weitere Dienste in die Cloud zu migrieren, erfüllt die bestehende Netzwerkarchitektur die wachsenden Anforderungen an Skalierbarkeit und zentrale Verwaltung nicht mehr.
+Die ursprüngliche Netzwerkstruktur bestand aus mehreren separaten Site-to-Site-VPN-Verbindungen. Angesichts der geplanten Migration weiterer Dienste war diese Architektur den wachsenden Anforderungen an Skalierbarkeit und zentrale Verwaltung nicht mehr gewachsen.
 
 \section{Problemanalyse}
-Mit der zunehmenden Anzahl angebundener Standorte steigt die Komplexität der bestehenden VPN-Mesh-Struktur erheblich. Die bisherige Architektur verursacht in der Praxis folgende Probleme:
+Wachsende Standortzahlen erhöhten die Komplexität der VPN-Mesh-Struktur erheblich. Daraus resultierten in der Praxis folgende Probleme:
 \begin{itemize}
     \item Manuelle Pflege statischer Routen bei der Integration jedes neuen Subnetzes
     \item Fehlende zentrale Verwaltungsebene für das Routing
     \item Eingeschränkte Transparenz und inkonsistente Sicherheitsrichtlinien
 \end{itemize}
 
-Darüber hinaus fehlen zentrale Monitoring-Mechanismen zur Überwachung der hybriden Netzwerkverbindungen. Dies führt zu einem signifikant erhöhten administrativen Aufwand im IT-Tagesgeschäft.
+Zusätzlich fehlten zentrale Monitoring-Mechanismen. Dies führte zu einem signifikant erhöhten administrativen Aufwand im IT-Tagesgeschäft.
 
 \section{Soll-Zustand und Projektziel}
-Das primäre Projektziel besteht in der Konzeption und Implementierung einer zentralen, hybriden Netzwerkarchitektur innerhalb der Google Cloud. Die neue Infrastruktur soll hochverfügbar, skalierbar und standardisiert sein. Dabei ist vorgesehen, die manuelle Routenpflege vollständig durch ein dynamisches Routing-Protokoll abzulösen.
+Primäres Projektziel war die Konzeption und Implementierung einer zentralen, hybriden Netzwerkarchitektur innerhalb der Google Cloud. Die neue Infrastruktur sollte hochverfügbar, skalierbar und standardisiert sein. Die manuelle Routenpflege sollte vollständig durch ein dynamisches Routing-Protokoll abgelöst werden.
 
 \section{Anforderungsanalyse}
 
-\textbf{Funktionale Anforderungen:}
+\subsection*{Funktionale Anforderungen}
 \begin{itemize}
     \item Vollständige Kommunikation zwischen allen angebundenen Standorten
     \item Zentrale Verwaltungsebene für alle hybriden Netzwerkverbindungen
@@ -37,7 +37,7 @@ Das primäre Projektziel besteht in der Konzeption und Implementierung einer zen
     \item Zentrale Durchsetzung von Firewall-Richtlinien
 \end{itemize}
 
-\textbf{Nichtfunktionale Anforderungen:}
+\subsection*{Nichtfunktionale Anforderungen}
 \begin{itemize}
     \item Hohe Skalierbarkeit für zukünftige Standortanbindungen
     \item Einfache Wartbarkeit und geringe Administrationskomplexität
@@ -45,7 +45,7 @@ Das primäre Projektziel besteht in der Konzeption und Implementierung einer zen
 \end{itemize}
 
 \subsection{Lasten- und Pflichtenheft}
-Die abgeleiteten Anforderungen werden im folgenden Auszug des Lasten- und Pflichtenhefts zusammengefasst.
+Die abgeleiteten Anforderungen fasst der folgende Auszug zusammen:
 
 \begin{table}[!ht]
 \centering
@@ -61,7 +61,7 @@ Sicherheit & Zentraler Schutz & GCP Firewall-Regeln (Default Deny) \\ \hline
 \end{table}
 
 \section{Stakeholder-Analyse}
-Für einen reibungslosen Projektablauf müssen die Interessen aller beteiligten Personengruppen angemessen berücksichtigt werden.
+Für einen reibungslosen Ablauf müssen die Interessen aller Beteiligten berücksichtigt werden.
 
 \begin{table}[!ht]
 \centering
@@ -77,7 +77,7 @@ Netzwerk-Admins & Anwender & Mittel & Geringer Wartungsaufwand \\ \hline
 \end{table}
 
 \section{Schutzbedarfsanalyse nach BSI und DSGVO}
-Da der Kunde im Finanzsektor tätig ist, unterliegen sämtliche übertragenen Daten strengen Datenschutzvorgaben (DSGVO). Die Bewertung orientiert sich an den IT-Grundschutz-Standards des BSI.
+Aufgrund der Tätigkeit im Finanzsektor unterliegen die übertragenen Daten strengen DSGVO-Vorgaben. Die Bewertung orientiert sich an den BSI-IT-Grundschutz-Standards.
 
 \begin{table}[!ht]
 \centering
@@ -92,7 +92,7 @@ Verfügbarkeit & Hoch & Ein Netzwerkausfall führt zu Unterbrechungen im Finanzs
 \end{table}
 
 \section{Risikoanalyse}
-Während der Projektumsetzung können verschiedene Risiken auftreten. Diese wurden im Vorfeld bewertet, um frühzeitig entsprechende Gegenmaßnahmen ergreifen zu können. Die Bewertung erfolgt auf einer Skala von 1 (niedrig) bis 3 (hoch).
+Während der Umsetzung können Risiken auftreten, die vorab bewertet wurden (Skala 1=niedrig bis 3=hoch).
 
 \begin{table}[!ht]
 \centering
@@ -113,30 +113,31 @@ Verzögerung durch fehlende IAP-Berechtigungen in der GCP
 Lückenhaftes Firewall-Konzept 
 & \cellcolor{ggreen!30} 1  
 & \cellcolor{gred!30} 3 
-& Gründliche Ist-Aufnahme aller benötigten Ports vor der Migration und konsequente Umsetzung des Default-Deny-Prinzips. \\ \hline
+& Gründliche Ist-Aufnahme aller benötigten Ports vor der Migration und Umsetzung des Default-Deny-Prinzips. \\ \hline
 
 \end{tabularx}
 \caption{Auszug aus der Risikoanalyse}
 \end{table}
 
 \section{Wirtschaftlichkeitsbetrachtung}
-Die bisherige Architektur verursacht durch die manuelle Einrichtung von VPN-Tunneln und statischen Routen einen hohen administrativen Aufwand. Die neue Architektur reduziert Fehlerquellen signifikant und verkürzt die Bereitstellungszeiten für neue Standorte erheblich. Die internen Personalkosten basieren auf einem marktüblichen Stundensatz für Systemadministratoren in Höhe von 70\,€.
+Die bisherige manuelle Einrichtung von VPN-Tunneln und statischen Routen verursacht hohen administrativen Aufwand. Die neue Architektur reduziert Fehlerquellen und verkürzt die Bereitstellungszeiten erheblich. Als Basis der Kalkulation dienen ein interner Systemadministrator-Stundensatz von 70\,€ für die Projektumsetzung sowie ein Stundensatz von 600\,€ für die fachliche Abstimmung und finale Freigabe durch den Geschäftsführer.
 
-\textbf{Kostenübersicht (Einmalkosten):}
+\subsection*{Einmalkosten}
 \begin{table}[!ht]
 \centering
 \begin{tabularx}{\textwidth}{|X|r|}
 \hline
 \textbf{Position} & \textbf{Kosten} \\ \hline
 Projektarbeitszeit (40 Stunden $\times$ 70\,€) & 2.800,00\,€ \\ \hline
+Fachliche Abstimmung und Review (1 Stunde $\times$ 600\,€) & 600,00\,€ \\ \hline
 Google Cloud Ressourcen (Einrichtung NCC Hub, Router) & 320,00\,€ \\ \hline
 Testumgebung (Temporäre VMs und Traffic) & 180,00\,€ \\ \hline
-\textbf{Gesamte Projektkosten} & \textbf{3.300,00\,€} \\ \hline
+\textbf{Gesamte Projektkosten} & \textbf{3.900,00\,€} \\ \hline
 \end{tabularx}
 \caption{Einmalige Projektkosten}
 \end{table}
 
-\textbf{Laufende Betriebskosten (Google Cloud) pro Jahr:}
+\subsection*{Laufende Betriebskosten (Google Cloud) pro Jahr}
 \begin{table}[!ht]
 \centering
 \begin{tabularx}{\textwidth}{|X|r|}
@@ -150,8 +151,8 @@ Traffic (Egress-Datenverkehr, geschätzt) & 600,00\,€ \\ \hline
 \caption{Laufende Cloud-Kosten pro Jahr}
 \end{table}
 
-\textbf{Erwartete Einsparungen pro Jahr (Amortisation):} \\
-Durch die Automatisierung des Routings sinkt der monatliche Wartungsaufwand um schätzungsweise 6 Stunden (72 Stunden im Jahr).
+\subsection*{Erwartete Einsparungen pro Jahr (Amortisation)}
+Durch die Automatisierung des Routings sinkt der Wartungsaufwand um schätzungsweise 6 Stunden pro Monat (72 Stunden im Jahr).
 
 \begin{table}[!ht]
 \centering
@@ -165,5 +166,5 @@ Vermeidung von Ausfallzeiten durch HA VPN (geschätzt) & 1.200,00\,€ \\ \hline
 \caption{Erwartete jährliche Einsparungen}
 \end{table}
 
-\textbf{Fazit der Vorabkalkulation:} \\
-Den laufenden Cloud-Kosten (3.200,00\,€) stehen jährliche Einsparungen von 6.240,00\,€ gegenüber, was einen \textbf{Nettonutzen von 3.040,00\,€ pro Jahr} ergibt. Die einmaligen Projektkosten (3.300,00\,€) amortisieren sich somit nach knapp 13 Monaten. Das bedeutet: Im ersten Jahr werden lediglich die initialen Projektkosten gedeckt, während der echte finanzielle Mehrwert von über 3.000,00\,€ erst ab dem zweiten Betriebsjahr dauerhaft im Unternehmen spürbar wird.
+\subsection*{Fazit der Vorabkalkulation}
+Den laufenden Cloud-Kosten (3.200,00\,€) stehen jährliche Einsparungen von 6.240,00\,€ gegenüber, was einen \textbf{Nettonutzen von 3.040,00\,€ pro Jahr} ergibt. Die einmaligen Projektkosten (3.900,00\,€) amortisieren sich somit nach \textbf{gut 15,5 Monaten}. Der Return on Investment (ROI) wird damit sicher im zweiten Betriebsjahr erreicht.

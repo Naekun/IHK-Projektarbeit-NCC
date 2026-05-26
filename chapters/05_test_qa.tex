@@ -2,40 +2,40 @@
 \chapter{Test- und Qualitätssicherung}
 
 \section{Testkonzept}
-Die Testphase fokussiert sich auf die zentralen Projektziele: Erreichbarkeit, Routing und Failover. Die Bereitstellung und Absicherung der Test-Ressourcen erfolgte strikt nach den Best Practices der Google Cloud. Für den administrativen Zugriff auf die VMs wurde der Identity-Aware Proxy (IAP) genutzt (IP-Range 35.235.240.0/20), wodurch keine öffentlichen IP-Adressen vergeben werden mussten. Projektbedingte Workarounds aufgrund verzögerter IAM-Rechtevergaben sind im Troubleshooting-Anhang dokumentiert.“
+Die Testphase hat die Erreichbarkeit, das Routing und den Failover geprüft. Die Test-Ressourcen sind nach den Best Practices der Google Cloud abgesichert worden: Für den administrativen Zugriff auf die VMs ist der Identity-Aware Proxy (IAP) genutzt worden. So waren keine öffentlichen IP-Adressen nötig. Projektspezifische Workarounds stehen im Troubleshooting-Anhang.
 
 \section{Durchführung}
-Die Tests wurden direkt nach dem Deployment durchgeführt. Der Ping-Test war erfolgreich. Die Verbindung zwischen den Test-VMs war stabil und ohne Paketverlust.
-
-Der Traceroute-Test wurde explizit mit ICMP ausgeführt, um den exakten Routing-Pfad über das VPN abzubilden (da Standard-UDP-Traffic von der Firewall blockiert wird). Die Ausgaben belegen, dass der Datenverkehr korrekt über die interne VPN-Verbindung geleitet wird.
+Die Tests haben direkt nach dem Deployment stattgefunden. Ein Ping-Test hat eine stabile Verbindung ohne Paketverluste bestätigt. Der Traceroute-Test ist explizit mit ICMP ausgeführt worden, da die Firewall den normalen UDP-Traffic blockiert. Das hat den korrekten Pfad über die interne VPN-Verbindung bewiesen.
 
 \subsection{Routing}
-Die Überprüfung der BGP-Routen erfolgte direkt im Cloud Router. Die Systemausgabe zeigt, dass die Präfixe korrekt gelernt wurden und beide Tunnel als aktiv angezeigt werden.
+Die Kontrolle im Cloud Router hat gezeigt, dass das Netzwerk alle Präfixe korrekt gelernt hat und beide Tunnel aktiv sind.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{images/BGP-Routes.png}
 \caption{BGP-Routen}
+\label{fig:bgp_routen}
 \end{figure}
 
 \subsection{Firewall}
-Die Firewall-Regeln wurden restriktiv konfiguriert, sodass nur der notwendige Testverkehr zugelassen war. Dies bestätigt die erfolgreiche Umsetzung des \textit{Default-Deny}-Prinzips.
+Die Firewall hat nur den vorher definierten Testverkehr durchgelassen. Dazu haben Ping-Anfragen (ICMP) und SSH-Zugriffe (TCP-Port 22) über den Identity-Aware Proxy gehört. Jeglicher andere Datenverkehr ist vom System erwartungsgemäß blockiert worden. Das hat die erfolgreiche Umsetzung des \textit{Default-Deny}-Prinzips bestätigt.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{images/Firewall_rules.png}
 \caption{Firewall-Regeln}
+\label{fig:firewall_regeln}
 \end{figure}
 
 \subsection{Failover}
-Für den Failover-Test wurde die BGP-Sitzung von \textit{Tunnel 0} administrativ entfernt. Nach einer kurzen Konvergenzzeit lief der Datenverkehr automatisch über den redundanten \textit{Tunnel 1} weiter. Damit wurde die Redundanz der Verbindung erfolgreich nachgewiesen.
+Für den Failover-Test ist die BGP-Sitzung von \textit{Tunnel 0} manuell beendet worden. Nach einer kurzen Wartezeit (Konvergenzzeit) hat das System den Traffic automatisch über den redundanten \textit{Tunnel 1} umgeleitet. Das hat die Ausfallsicherheit erfolgreich nachgewiesen.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=\textwidth]{images/Failover.png}
 \caption{Failover-Test}
+\label{fig:failover_test}
 \end{figure}
 
-
 \section{Ergebnis}
-Alle definierten Testfälle waren erfolgreich. Die Verbindung zwischen der Cloud und der On-Premises-Umgebung war stabil, das dynamische BGP-Routing funktionierte reibungslos und der automatische Failover auf den redundanten Tunnel wurde korrekt ausgeführt.
+Alle Tests sind erfolgreich gewesen. Die hybride Verbindung war stabil, das BGP-Routing hat fehlerfrei funktioniert und der automatische Failover hat korrekt reagiert.

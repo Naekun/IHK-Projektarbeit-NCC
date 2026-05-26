@@ -2,13 +2,12 @@
 
 ## Projekt
 
-Implementierung einer skalierbaren hybriden
-Netzwerkarchitektur in der Google Cloud
-mit Network Connectivity Center.
+Implementierung einer skalierbaren hybriden Netzwerkarchitektur in der Google Cloud mit Network Connectivity Center.
 
-## Ausbildungsbetrieb
+## Betriebe
 
-Söldner Consult GmbH
+- **Ausbildungsbetrieb:** GFN GmbH, Nürnberg
+- **Praktikumsbetrieb:** Söldner Consult GmbH, Nürnberg
 
 ## Technologien
 
@@ -19,6 +18,7 @@ Söldner Consult GmbH
 - VPC Networks
 - Cloud Firewall
 - Cloud Monitoring
+- Identity-Aware Proxy (IAP)
 
 ## Struktur
 
@@ -30,7 +30,7 @@ Söldner Consult GmbH
 
 ## Build
 
-Die Dokumentation kann lokal oder mit Overleaf kompiliert werden.
+Die Dokumentation kann lokal (z.B. mit TeX Live) oder direkt über Overleaf kompiliert werden.
 
 ## GitHub-Repository & Dokumente
 
