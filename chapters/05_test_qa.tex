@@ -8,7 +8,7 @@ Die Testphase fokussierte sich auf die Validierung der End-to-End-Erreichbarkeit
 Unmittelbar nach dem automatisierten Deployment erfolgte die Verifikation der Netzwerkkonnektivität. Initiale Ping-Tests bestätigten eine stabile Verbindung mit 0\,\% Paketverlust. Da das restriktive Firewall-Regelwerk standardmäßigen UDP-Traffic verwirft, wurde der Traceroute-Test zur Routenverfolgung explizit via ICMP (\texttt{-I}) ausgeführt. Die ermittelten Hops verifizierten das korrekte Routing über die internen IPsec-Tunnel.
 
 \subsection{Routing}
-Die Statusprüfung des Cloud Routers bestätigte den erfolgreichen Aufbau der BGP-Sitzungen (State: \textit{Established}). Das System hat die propagierten On-Premises-Präfixe korrekt in die Cloud-VPC-Routingtabelle übernommen; beide VPN-Tunnel agierten planmäßig als aktive \textit{Next Hops}.
+Die Statusprüfung des Cloud Routers bestätigte den erfolgreichen Aufbau der BGP-Sitzungen (State: \textit{UP}). Das System hat die propagierten Präfixe korrekt in die Cloud-VPC-Routingtabelle übernommen; beide VPN-Tunnel agierten planmäßig als aktive \textit{Next Hops}.
 
 \begin{figure}[!ht]
 \centering
