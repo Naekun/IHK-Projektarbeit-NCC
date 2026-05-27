@@ -3,7 +3,7 @@
 
 Die Realisierungsphase wurde primär unter dem Aspekt der Kosten- und Zeitoptimierung durchgeführt. Anstatt die Netzwerkinfrastruktur zeitaufwendig über die grafische Benutzeroberfläche (GCP Console) manuell zu konfigurieren, wurde die Bereitstellung in eine Skript-Vorbereitungsphase und eine automatisierte Ausführungsphase unterteilt.
 
-Dieses Vorgehen ermöglichte es, kostenintensive Cloud-Ressourcen (wie HA-VPN-Gateways) erst unmittelbar zum Testzeitpunkt bereitzustellen und nach erfolgreicher Validierung wieder abzubauen. 
+Dieses Vorgehen ermöglichte es, kostenintensive Cloud-Ressourcen wie die HA-VPN-Gateways erst unmittelbar zum Testzeitpunkt bereitzustellen und nach erfolgreicher Validierung wieder abzubauen.
 
 \section{Vorbereitungsphase (Skripting und Variablen)}
 Das gesamte Deployment wurde in Form von \texttt{gcloud}-Befehlen für das Command Line Interface (CLI) vorbereitet. Um manuelle Eingabefehler zu vermeiden, wurden Netzwerke, Regionen und IP-Adressen als globale Umgebungsvariablen definiert. 
