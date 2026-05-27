@@ -72,15 +72,21 @@ gcloud compute firewall-rules create "fw-allow-internal-branch" \
 \end{lstlisting}
 
 \subsection{HA-VPN und BGP-Routing}
-Anschließend wurden die Cloud Router für das BGP-Routing sowie die redundanten HA-VPN-Gateways bereitgestellt. Der Aufbau der IPsec-Tunnel erfolgte unter Nutzung eines sicheren \textit{Shared Secrets}. Für die isolierte Testumgebung wurden sowohl die Cloud- als auch die On-Premises-Seite simuliert. Die BGP-Sitzungen wurden über standardisierte APIPA-Adressen (169.254.x.x) konfiguriert. 
+Anschließend wurden die Cloud Router und HA-VPN-Gateways bereitgestellt. Da die Konfiguration der lokalen VPN-Endpunkte (z.\,B. Fortinet) produktiv durch den Kunden erfolgt, wurde die Gegenseite hier zu Testzwecken simuliert. Der Code-Auszug zeigt die Gateway-Erstellung und die Cloud-seitigen Tunnel (Branch-Konfiguration siehe Betriebshandbuch).
 
-\begin{lstlisting}[language=bash, caption={Konfiguration der HA-VPN-Gateways und BGP-Sitzungen}]
-# 1. Cloud Router und HA-VPN-Gateway anlegen
+\begin{lstlisting}[language=bash, caption={Konfiguration der Gateways und BGP-Sitzungen (Auszug)}]
+# 1. Cloud- und Branch-Router sowie HA-VPN-Gateways anlegen
 gcloud compute routers create "${CLOUD_ROUTER}" \
   --region="${REGION}" --network="${CLOUD_VPC}" --asn="${CLOUD_ASN}"
 
 gcloud compute vpn-gateways create "${CLOUD_GW}" \
   --network="${CLOUD_VPC}" --region="${REGION}"
+
+gcloud compute routers create "${BRANCH_ROUTER}" \
+  --region="${REGION}" --network="${BRANCH_VPC}" --asn="${BRANCH_ASN}"
+
+gcloud compute vpn-gateways create "${BRANCH_GW}" \
+  --network="${BRANCH_VPC}" --region="${REGION}"
 
 # 2. IPsec Tunnel 0 (Interface 0) erstellen und BGP konfigurieren
 gcloud compute vpn-tunnels create "${TUN_EU_TO_BR_0}" \
@@ -112,18 +118,27 @@ gcloud compute routers add-bgp-peer "${CLOUD_ROUTER}" \
 \end{lstlisting}
 
 \subsection{Network Connectivity Center (NCC)}
-Den Kern der Hub-and-Spoke-Architektur bildet das Network Connectivity Center. Der Hub wurde als zentrale Verwaltungsinstanz angelegt. Im Anschluss wurden die zuvor erstellten VPN-Tunnel als \textit{Spoke} an den Hub angebunden, um den nahtlosen Datentransfer zwischen den Netzwerken zu aktivieren.
+Den Kern der Hub-and-Spoke-Architektur bildet das Network Connectivity Center. Der Hub wurde als zentrale Verwaltungsinstanz angelegt. Im Anschluss wurden die zuvor erstellten VPN-Tunnel mittels der \texttt{linked-vpn-tunnels}-Syntax als \textit{Spoke} an den Hub angebunden, um den nahtlosen Datentransfer zwischen den Netzwerken zu aktivieren.
 
 \begin{lstlisting}[language=bash, caption={Bereitstellung des NCC Hubs und der Spokes}]
 # Zentralen Hub erstellen
 gcloud network-connectivity hubs create "${HUB_NAME}" \
   --description="Zentraler Hybrid Cloud Hub"
 
-# Beide VPN-Tunnel als redundanten Spoke an den Hub anbinden
-gcloud network-connectivity spokes create "spoke-branch-a" \
-  --hub="${HUB_NAME}" --global \
-  --vpn-tunnel="projects/${PROJECT_ID}/regions/${REGION}/vpnTunnels/${TUN_EU_TO_BR_0}" \
-  --vpn-tunnel="projects/${PROJECT_ID}/regions/${REGION}/vpnTunnels/${TUN_EU_TO_BR_1}" \
+# API-Basis-Pfad zur besseren Lesbarkeit auslagern
+export API_BASE="https://www.googleapis.com/compute/v1/projects"
+export REGION_PATH="${API_BASE}/${PROJECT_ID}/regions/${REGION}"
+
+# Tunnel-URIs zusammensetzen
+export HUB_URI="https://networkconnectivity.googleapis.com/v1/projects/${PROJECT_ID}/locations/global/hubs/${HUB_NAME}"
+export TUN0_URI="${REGION_PATH}/vpnTunnels/${TUN_EU_TO_BR_0}"
+export TUN1_URI="${REGION_PATH}/vpnTunnels/${TUN_EU_TO_BR_1}"
+
+# VPN-Tunnel als Spoke an den Hub anbinden
+gcloud network-connectivity spokes linked-vpn-tunnels create "${SPOKE_NAME}" \
+  --region="${REGION}" \
+  --hub="${HUB_URI}" \
+  --vpn-tunnels="${TUN0_URI},${TUN1_URI}" \
   --site-to-site-data-transfer
 \end{lstlisting}
 

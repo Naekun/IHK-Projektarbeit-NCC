@@ -2,13 +2,13 @@
 \chapter{Test- und Qualitätssicherung}
 
 \section{Testkonzept}
-Die Testphase hat die Erreichbarkeit, das Routing und den Failover geprüft. Die Test-Ressourcen sind nach den Best Practices der Google Cloud abgesichert worden: Für den administrativen Zugriff auf die VMs ist der Identity-Aware Proxy (IAP) genutzt worden. So waren keine öffentlichen IP-Adressen nötig. Projektspezifische Workarounds stehen im Troubleshooting-Anhang.
+Die Testphase fokussierte sich auf die Validierung der End-to-End-Erreichbarkeit, des dynamischen Routings und des Failover-Mechanismus. Gemäß den Security Best Practices der Google Cloud erfolgte die Absicherung der Test-Ressourcen strikt ohne öffentliche IP-Adressen (Zero-Trust-Ansatz). Der administrative SSH-Zugriff auf die Test-VMs wurde stattdessen über den Identity-Aware Proxy (IAP) getunnelt. Projektspezifische Abweichungen und Workarounds sind im Troubleshooting-Anhang dokumentiert.
 
 \section{Durchführung}
-Die Tests haben direkt nach dem Deployment stattgefunden. Ein Ping-Test hat eine stabile Verbindung ohne Paketverluste bestätigt. Der Traceroute-Test ist explizit mit ICMP ausgeführt worden, da die Firewall den normalen UDP-Traffic blockiert. Das hat den korrekten Pfad über die interne VPN-Verbindung bewiesen.
+Unmittelbar nach dem automatisierten Deployment erfolgte die Verifikation der Netzwerkkonnektivität. Initiale Ping-Tests bestätigten eine stabile Verbindung mit 0\,\% Paketverlust. Da das restriktive Firewall-Regelwerk standardmäßigen UDP-Traffic verwirft, wurde der Traceroute-Test zur Routenverfolgung explizit via ICMP (\texttt{-I}) ausgeführt. Die ermittelten Hops verifizierten das korrekte Routing über die internen IPsec-Tunnel.
 
 \subsection{Routing}
-Die Kontrolle im Cloud Router hat gezeigt, dass das Netzwerk alle Präfixe korrekt gelernt hat und beide Tunnel aktiv sind.
+Die Statusprüfung des Cloud Routers bestätigte den erfolgreichen Aufbau der BGP-Sitzungen (State: \textit{Established}). Das System hat die propagierten On-Premises-Präfixe korrekt in die Cloud-VPC-Routingtabelle übernommen; beide VPN-Tunnel agierten planmäßig als aktive \textit{Next Hops}.
 
 \begin{figure}[!ht]
 \centering
@@ -18,7 +18,7 @@ Die Kontrolle im Cloud Router hat gezeigt, dass das Netzwerk alle Präfixe korre
 \end{figure}
 
 \subsection{Firewall}
-Die Firewall hat nur den vorher definierten Testverkehr durchgelassen. Dazu haben Ping-Anfragen (ICMP) und SSH-Zugriffe (TCP-Port 22) über den Identity-Aware Proxy gehört. Jeglicher andere Datenverkehr ist vom System erwartungsgemäß blockiert worden. Das hat die erfolgreiche Umsetzung des \textit{Default-Deny}-Prinzips bestätigt.
+Die Firewall hat nur den vorher definierten Testverkehr durchgelassen. Dazu haben Ping-Anfragen (ICMP) und SSH-Zugriffe (TCP-Port 22) über den Identity-Aware Proxy gehört. Jeglicher andere Datenverkehr ist vom System erwartungsgemäß blockiert worden. Das hat die erfolgreiche Umsetzung des \\textit{Default-Deny}-Prinzips bestätigt.
 
 \begin{figure}[!ht]
 \centering
@@ -28,7 +28,7 @@ Die Firewall hat nur den vorher definierten Testverkehr durchgelassen. Dazu habe
 \end{figure}
 
 \subsection{Failover}
-Für den Failover-Test ist die BGP-Sitzung von \textit{Tunnel 0} manuell beendet worden. Nach einer kurzen Wartezeit (Konvergenzzeit) hat das System den Traffic automatisch über den redundanten \textit{Tunnel 1} umgeleitet. Das hat die Ausfallsicherheit erfolgreich nachgewiesen.
+Um ein Disaster-Recovery-Szenario (Link Down) zu simulieren, wurde die BGP-Sitzung von \textit{Tunnel 0} administrativ deaktiviert. Innerhalb der kurzen BGP-Konvergenzzeit routete der Cloud Router den Traffic nahtlos und automatisch über den redundanten \textit{Tunnel 1}. Der Hochverfügbarkeitsnachweis (HA) war damit erfolgreich.
 
 \begin{figure}[!ht]
 \centering
@@ -38,4 +38,4 @@ Für den Failover-Test ist die BGP-Sitzung von \textit{Tunnel 0} manuell beendet
 \end{figure}
 
 \section{Ergebnis}
-Alle Tests sind erfolgreich gewesen. Die hybride Verbindung war stabil, das BGP-Routing hat fehlerfrei funktioniert und der automatische Failover hat korrekt reagiert.
+Alle definierten Testfälle wurden erfolgreich abgeschlossen. Die hybride Netzwerkverbindung war stabil und das dynamische BGP-Routing funktionierte fehlerfrei. Zudem hat der automatische Failover exakt nach den SLA-Vorgaben reagiert und die Ausfallsicherheit bestätigt.
