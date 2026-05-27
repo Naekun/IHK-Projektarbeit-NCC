@@ -102,7 +102,7 @@ gcloud compute routers add-bgp-peer "${CLOUD_ROUTER}" \
   --peer-name="bgp-branch-a-0" --interface="if-eu-to-br-0" \
   --peer-ip-address="${BR_BGP_0_IP}" --peer-asn="${BRANCH_ASN}" --region="${REGION}"
 
-# 3. IPsec Tunnel 1 (Interface 1 für Hochverfügbarkeit) erstellen
+# 3. IPsec Tunnel 1 (Interface 1 fuer Hochverfuegbarkeit) erstellen
 gcloud compute vpn-tunnels create "${TUN_EU_TO_BR_1}" \
   --peer-gcp-gateway="${BRANCH_GW}" --region="${REGION}" \
   --ike-version=2 --shared-secret="${SHARED_SECRET}" \
