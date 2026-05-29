@@ -1,21 +1,18 @@
 # Betriebshandbuch Teil 2: Troubleshooting
 
-Dieses Dokument beschreibt die Probleme, die während des Deployments der hybriden Netzwerkarchitektur tatsächlich aufgetreten sind.
+Dieses Dokument beschreibt die spezifischen Probleme und Herausforderungen, die während des Deployments der hybriden Netzwerkarchitektur aufgetreten sind.
 
-## 1. Zugriff auf Test-VMs über IAP nicht möglich
+## 1. Blockierter IAP-Zugriff auf Test-VMs
 
-### Problem
+### Fehlerbild
+Der geplante administrative SSH-Zugriff auf die Test-VMs über den Identity-Aware Proxy (IAP) schlug fehl.
 
-Der geplante SSH-Zugriff auf die Test-VMs über IAP konnte nicht direkt genutzt werden.
+### Ursachenanalyse
+- Die erforderlichen IAM-Rollen (z. B. *IAP-secured Tunnel User*) waren im Projektkontext nicht vollständig vergeben.
+- Die zugehörigen IAP-Firewall-Regeln waren noch nicht final provisioniert.
 
-### Mögliche Ursache
-
-- Die erforderlichen IAM-Berechtigungen für IAP TCP Forwarding waren nicht vollständig vorhanden.
-- Die IAP-bezogenen Firewall-Regeln waren im Projektkontext nicht ausreichend vorbereitet.
-
-### Lösung im Projekt
-
-Für die Testphase wurden den VMs temporär externe IP-Adressen zugewiesen. Zusätzlich wurden kurzfristig SSH-Firewall-Regeln erstellt. Der eigentliche Funktionstest des VPN lief trotzdem über die internen IP-Adressen.
+### Workaround im Projekt
+Um den Projektzeitplan einzuhalten, erhielten die Test-VMs für die Validierungsphase temporär externe IP-Adressen. Zusätzlich wurden kurzfristig SSH-Firewall-Regeln erstellt. Die eigentliche VPN-Routing-Prüfung lief davon unabhängig weiterhin über die internen Adressen.
 
 ```bash
 # Temporäre externe IPs hinzufügen
@@ -39,19 +36,16 @@ gcloud compute firewall-rules create "fw-allow-ssh-external-branch" \
   --source-ranges="0.0.0.0/0"
 ```
 
-## 2. Traceroute zeigte zunächst keinen nutzbaren Pfad
+## 2. Abgewiesene Traceroute-Pakete (UDP-Drop)
 
-### Problem
+### Fehlerbild
+Der initiale Traceroute-Test zwischen den VMs zeigte nur Timeouts und lieferte keine nutzbaren Routing-Informationen.
 
-Der erste Traceroute-Test lieferte kein verwertbares Ergebnis.
+### Ursachenanalyse
+Der Standardaufruf von `traceroute` unter Linux sendet UDP-Pakete. Das strikte *Default-Deny*-Regelwerk der Testumgebung blockierte diesen unerwarteten UDP-Traffic.
 
-### Mögliche Ursache
-
-Der Standardaufruf von `traceroute` verwendet UDP-Pakete. Diese wurden durch die Firewall-Regeln der Testumgebung nicht zugelassen.
-
-### Lösung im Projekt
-
-Der Traceroute-Test wurde mit ICMP statt UDP durchgeführt. Dafür wurde der Parameter `-I` verwendet.
+### Lösungsansatz
+Der Traceroute-Aufruf wurde mit dem Parameter `-I` auf ICMP-Pakete umgestellt, die in der Firewall explizit für Diagnosezwecke freigegeben waren.
 
 ```bash
 gcloud compute ssh "vm-branch" \
@@ -59,19 +53,16 @@ gcloud compute ssh "vm-branch" \
   --command="sudo apt-get update -y > /dev/null && sudo apt-get install traceroute -y > /dev/null && sudo traceroute -I -n ${CLOUD_VM_IP}"
 ```
 
-## 3. Veralteter NCC-Befehl für VPN-Spokes
+## 3. Veraltete gcloud-Syntax für NCC-Spokes
 
-### Problem
+### Fehlerbild
+Die Erstellung des VPN-Spokes schlug mit einem Syntax-Fehler in der CLI fehl.
 
-Der ältere CLI-Ansatz zur Erstellung eines NCC-Spokes mit einem einzelnen `--vpn-tunnel` war nicht mehr passend zur aktuellen Syntax.
+### Ursachenanalyse
+Google Cloud hat die Syntax für das Network Connectivity Center aktualisiert. Der ältere Befehl mit einem einzelnen `--vpn-tunnel`-Parameter war nicht mehr passend zur aktuellen API.
 
-### Mögliche Ursache
-
-Die `gcloud`-Syntax für NCC-Spokes wurde geändert. Für VPN-Tunnel wird jetzt der Unterbefehl `linked-vpn-tunnels create` verwendet.
-
-### Lösung im Projekt
-
-Der Spoke wurde mit dem neuen Befehl und vollständigen Tunnel-URIs angelegt.
+### Lösungsansatz
+Der Spoke wurde mit dem aktuellen Unterbefehl `linked-vpn-tunnels create` und den vollständigen Tunnel-URIs angelegt.
 
 ```bash
 export TUNNEL0_URI="https://www.googleapis.com/compute/v1/projects/${PROJECT_ID}/regions/${REGION}/vpnTunnels/${TUN_EU_TO_BR_0}"
@@ -84,19 +75,16 @@ gcloud network-connectivity spokes linked-vpn-tunnels create "${SPOKE_NAME}" \
   --site-to-site-data-transfer
 ```
 
-## 4. Ausgabe des BGP-Status war missverständlich
+## 4. Abweichende BGP-Statusausgabe in der CLI
 
-### Problem
+### Fehlerbild
+Bei der Statusprüfung des Cloud Routers via CLI wurde nicht der erwartete BGP-Zustand `ESTABLISHED`, sondern `UP` angezeigt.
 
-Bei der Kontrolle des Cloud Routers wurde im Status nicht der Begriff `ESTABLISHED`, sondern `UP` angezeigt.
+### Ursachenanalyse
+Die Google Cloud CLI (`gcloud`) verwendet für BGP-Sitzungen eine vereinfachte, betriebliche Statusdarstellung. Ein aktives und funktionierendes Peering wird hierbei als `UP` deklariert.
 
-### Mögliche Ursache
-
-Cloud Router verwendet in der CLI-Ausgabe eine betriebliche Statusdarstellung. Für aktive Peerings wird `UP` angezeigt.
-
-### Lösung im Projekt
-
-Die BGP-Sitzung wurde über `get-status` geprüft und der Status `UP` als erfolgreiches Peering bewertet. Zusätzlich wurden die gelernten Routen kontrolliert.
+### Lösungsansatz
+Die BGP-Sitzung wurde über `get-status` geprüft und der Status `UP` als erfolgreiches Peering bewertet. Zur finalen Verifikation wurden zusätzlich die gelernten Routen ausgelesen.
 
 ```bash
 # BGP Peer Status prüfen
@@ -110,18 +98,15 @@ gcloud compute routers get-status "${CLOUD_ROUTER}" \
   --format="table(result.bestRoutes[].destRange:label=DESTINATION_RANGE, result.bestRoutes[].nextHopIp:label=NEXT_HOP, result.bestRoutes[].priority:label=PRIORITY)"
 ```
 
-## 5. Failover-Test erforderte manuelles Entfernen eines BGP-Peers
+## 5. Simulation des Failover-Szenarios (BGP Peer Down)
 
-### Problem
+### Fehlerbild
+Für den Nachweis der Ausfallsicherheit (Redundanz) musste das System zum Wechsel auf den zweiten Tunnel gezwungen werden.
 
-Für den Nachweis der Redundanz musste ein Ausfall künstlich erzeugt werden.
+### Ursachenanalyse
+Da im Normalbetrieb beide IPsec-Tunnel aktiv sind (Active/Active), musste für einen kontrollierten Ausfalltest ein Peering gezielt unterbrochen werden.
 
-### Mögliche Ursache
-
-Im Normalbetrieb bleiben beide Tunnel aktiv. Für einen kontrollierten Test musste daher ein Peering gezielt entfernt werden.
-
-### Lösung im Projekt
-
+### Lösungsansatz
 Der BGP-Peer von Tunnel 0 wurde temporär gelöscht. Danach wurde die Verbindung erneut geprüft. Anschließend wurde der Peer wieder angelegt.
 
 ```bash
@@ -148,19 +133,16 @@ gcloud compute routers add-bgp-peer "${CLOUD_ROUTER}" \
   --region="${REGION}"
 ```
 
-## 6. Rückbau musste in korrekter Reihenfolge erfolgen
+## 6. Ressourcen-Abhängigkeiten beim Teardown
 
-### Problem
+### Fehlerbild
+Beim Löschen der Umgebung traten Abhängigkeitsfehler auf, die den Teardown-Prozess blockierten.
 
-Beim Löschen der Umgebung können Abhängigkeiten zwischen NCC, VPN, Routern und Netzwerken zu Fehlern führen.
+### Ursachenanalyse
+Einzelne Cloud-Ressourcen lassen sich nur löschen, wenn abhängige Objekte bereits entfernt wurden (z. B. zwischen NCC, VPN, Routern und Netzwerken).
 
-### Mögliche Ursache
-
-Einzelne Ressourcen lassen sich nur löschen, wenn abhängige Objekte bereits entfernt wurden.
-
-### Lösung im Projekt
-
-Der Rückbau erfolgte in fester Reihenfolge: zuerst Spoke und Hub, danach Tunnel, Gateways, Router und zuletzt Firewalls, Subnetze und VPCs.
+### Lösungsansatz
+Der Rückbau erfolgte in einer festen, strikten Reihenfolge: zuerst Spoke und Hub, danach Tunnel, Gateways, Router und zuletzt Firewalls, Subnetze und VPCs.
 
 ```bash
 # NCC entfernen
